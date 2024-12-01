@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=League+Spartan:wght@100..900&display=swap');
+
+.claim-text {
+    font-family: "Geist", sans-serif;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 75%, rgba(0, 255, 196, 1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.connect-wallet-btn {
+    background: linear-gradient(90deg, rgba(0, 219, 169, 1) 0%, rgba(0, 255, 196, 1) 100%);
+}
+
+.connect-wallet-btn:hover {
+    background: #00ffc4A5;
+}
+
+.address {
+    padding: 5px 8px;
+    background: #00ffc4A5;
+}
+
+.submit-near-address {
+    border: 2px solid #00ffc4A5;
+}
+
+.submit-near-address input {
+    border: none;
+    outline: none;
+}
+
+.submit,
+.goto {
+    background: linear-gradient(90deg, rgba(0, 219, 169, 1) 0%, rgba(0, 255, 196, 1) 100%);
+}
+
+.box {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
