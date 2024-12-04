@@ -5,7 +5,6 @@ import { useAccount } from "wagmi";
 export default function ChatBot({ agentId ,accountId}: { agentId: any,accountId:any }) {
   const { sessionId, messages, isloading, sendRequest } = useVoiceBackend();
   const [query, setQuery] = useState("");
-  const [wallet,setWallet] = useState("false");
   // Ref for the chat area with proper typing
 
   const chatContainerRef = useRef<HTMLDivElement>(null)
@@ -13,11 +12,12 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any,accountId:
     if (query.trim() !== "") {
       if(accountId){
         alert(accountId);
-        setWallet("true");
-        alert(`Wallet State Updated: ${wallet}`);
-      }
-      sendRequest(query,wallet, agentId,accountId);
+        sendRequest(query,"true", agentId,accountId);
+        setQuery("");
+      }else{
+      sendRequest(query,"false", agentId,accountId);
       setQuery("");
+      }
     }
   };
 
