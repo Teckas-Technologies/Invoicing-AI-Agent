@@ -13,9 +13,8 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any,accountId:
     if (query.trim() !== "") {
       if(accountId){
         alert(accountId);
-        setWallet("true");
-        alert(wallet);
-
+        setWallet((prevWallet) => (prevWallet === "false" ? "true" : "false"));
+        alert(`Wallet State Updated: ${wallet}`);
       }
       sendRequest(query,wallet, agentId,accountId);
       setQuery("");
