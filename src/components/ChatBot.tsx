@@ -15,6 +15,7 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any,accountId:
         sendRequest(query,"true", agentId,accountId);
         setQuery("");
       }else{
+      alert("this part")
       sendRequest(query,"false", agentId,accountId);
       setQuery("");
       }
