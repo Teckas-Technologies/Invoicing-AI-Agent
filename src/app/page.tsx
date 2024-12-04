@@ -51,8 +51,10 @@ export default function Home() {
         const agentId = params.get("agentId");
         if (agentId) {
           // alert(`agent${agentId}`)
-          setShow(false);
+          setShow(true);
           setAgent(agentId);
+        }else{
+          setShow(false);
         }
       } catch (err:any) {
         console.log(err.message);
@@ -68,10 +70,10 @@ export default function Home() {
       {/* <Script id="chatbot" data-agent-id="12345" src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script> */}
       {/* <CreateRequestForm /> */}
       {/* <RequestTabs /> */}
-      {!show?(
-        <ChatAccessDenied/>
+      {show?(
+       <ChatBot agentId={agent}/>
       ):(
-        <ChatBot agentId={agent}/>
+        <ChatAccessDenied/>
       )}
       {/* <SampleCode /> */}
     </main>
