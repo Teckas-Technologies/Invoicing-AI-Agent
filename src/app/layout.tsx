@@ -44,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-      <Script id="chatbot" data-agent-id="12345" src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script>
+      {/* <Script id="chatbot" data-agent-id="12345" src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script> */}
         </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

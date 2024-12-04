@@ -65,7 +65,7 @@ export default function Home() {
   return (
     <main className="relative flex flex-col w-full items-center overflow-x-hidden min-h-[100vh] overflow-x-hidden">
       {/* <Header /> */}
-      <Script id="chatbot" data-agent-id="12345" src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script>
+      {/* <Script id="chatbot" data-agent-id="12345" src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script> */}
       {/* <CreateRequestForm /> */}
       {/* <RequestTabs /> */}
       {!show?(
