@@ -6,14 +6,16 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any,accountId:
   const { sessionId, messages, isloading, sendRequest } = useVoiceBackend();
   const [query, setQuery] = useState("");
   const [wallet,setWallet] = useState("false");
-  const { address, isConnecting, isConnected, isDisconnected } = useAccount();
-
   // Ref for the chat area with proper typing
+
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const handleSendMessage = () => {
     if (query.trim() !== "") {
-      if(accountId && accountId.trim() !== ''){
+      if(accountId){
+        alert(accountId);
         setWallet("true");
+        alert(wallet);
+
       }
       sendRequest(query,wallet, agentId,accountId);
       setQuery("");

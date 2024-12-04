@@ -17,7 +17,7 @@ export default function Home() {
   const [requestData, setRequestData] = useState(null);
   const[show,setShow] = useState(true);
   const [agent,setAgent] = useState("");
-  const [accountId,setAccountId] = useState("")
+  const [accountId, setAccountId] = useState<string | null>(null);
 
 
   const handleCreateRequest = async (data: any) => {
