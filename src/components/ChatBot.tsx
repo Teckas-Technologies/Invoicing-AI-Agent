@@ -10,7 +10,7 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any,accountId:
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const handleSendMessage = () => {
     if (query.trim() !== "") {
-      if(accountId){
+      if(accountId && query.trim() !== ""){
         // alert(accountId);
         sendRequest(query,"true", agentId,accountId);
         setQuery("");
