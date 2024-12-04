@@ -11,7 +11,7 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any,accountId:
   const handleSendMessage = () => {
     if (query.trim() !== "") {
       if(accountId){
-        alert(accountId);
+        // alert(accountId);
         sendRequest(query,"true", agentId,accountId);
         setQuery("");
       }else{
