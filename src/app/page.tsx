@@ -17,6 +17,7 @@ export default function Home() {
   const [requestData, setRequestData] = useState(null);
   const[show,setShow] = useState(true);
   const [agent,setAgent] = useState("");
+  const [accountId,setAccountId] = useState("")
 
 
   const handleCreateRequest = async (data: any) => {
@@ -49,12 +50,16 @@ export default function Home() {
         // Parse query parameters
         const params = new URLSearchParams(window.location.search);
         const agentId = params.get("agentId");
+        const accountId = params.get("accountId");
         if (agentId) {
           // alert(`agent${agentId}`)
           setShow(true);
           setAgent(agentId);
         }else{
           setShow(false);
+        }
+        if(accountId){
+          setAccountId(accountId)
         }
       } catch (err:any) {
         console.log(err.message);
@@ -71,7 +76,7 @@ export default function Home() {
       {/* <CreateRequestForm /> */}
       {/* <RequestTabs /> */}
       {show?(
-       <ChatBot agentId={agent}/>
+       <ChatBot agentId={agent} accountId={accountId}/>
       ):(
         <ChatAccessDenied/>
       )}

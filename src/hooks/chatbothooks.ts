@@ -42,7 +42,6 @@ const useVoiceBackend = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]); // Store messages
   const [isloading, setIsLoading] = useState<boolean>(false);
-  const { address, isConnecting,isConnected, isDisconnected } = useAccount();
   const { fetchRequests } = useFetchRequests();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,7 +62,7 @@ const useVoiceBackend = () => {
   }, []);
 
   // Function to make the API call
-  const sendRequest = async (query: string, isWalletConnected: string, agentId: string) => {
+  const sendRequest = async (query: string, isWalletConnected: string, agentId: string,address:any) => {
     if (!sessionId) return;
 
     setIsLoading(true);
@@ -207,7 +206,15 @@ const useVoiceBackend = () => {
   
               setStatus(APP_STATUS.REQUEST_CONFIRMED);
               setRequestData(confirmedRequestData);
-              setSuccess(true);
+              const requestId = confirmedRequestData.requestId
+              setMessages((prevMessages) => [
+                ...prevMessages,
+                { sender: "bot", text: `View your request` },
+              ]);
+              setMessages((prevMessages) => [
+                ...prevMessages,
+                { sender: "bot", text: `https://scan.request.network/request/${requestId}` },
+              ]);
           } catch (error:any) {
               console.error('Error creating request:', error);
               setError('Failed to create request');

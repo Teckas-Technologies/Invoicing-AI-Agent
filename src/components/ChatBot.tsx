@@ -2,7 +2,7 @@ import useVoiceBackend from "@/hooks/chatbothooks";
 import { useState, useEffect, useRef } from "react";
 import { useAccount } from "wagmi";
 
-export default function ChatBot({ agentId }: { agentId: any }) {
+export default function ChatBot({ agentId ,accountId}: { agentId: any,accountId:any }) {
   const { sessionId, messages, isloading, sendRequest } = useVoiceBackend();
   const [query, setQuery] = useState("");
   const [wallet,setWallet] = useState("false");
@@ -12,10 +12,10 @@ export default function ChatBot({ agentId }: { agentId: any }) {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const handleSendMessage = () => {
     if (query.trim() !== "") {
-      if(isConnected){
+      if(accountId && accountId.trim() !== ''){
         setWallet("true");
       }
-      sendRequest(query,wallet, agentId);
+      sendRequest(query,wallet, agentId,accountId);
       setQuery("");
     }
   };
