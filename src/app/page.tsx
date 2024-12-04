@@ -59,6 +59,7 @@ export default function Home() {
           setShow(false);
         }
         if(accountId){
+          alert(`agent${accountId}`)
           setAccountId(accountId)
         }
       } catch (err:any) {
