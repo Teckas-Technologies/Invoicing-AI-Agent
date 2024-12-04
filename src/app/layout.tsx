@@ -4,6 +4,7 @@ import "./globals.css";
 import ContextProvider from "@/contexts/ContextProvider";
 import { headers } from "next/headers";
 import { EthProvider } from "@/contexts/ContractProvider";
+import Script from "next/script";
 
 if (typeof process === 'undefined') {
   (globalThis as any).process = {
@@ -42,6 +43,9 @@ export default function RootLayout({
   const cookies = headers().get('cookie')
   return (
     <html lang="en">
+      <head>
+      <Script id="chatbot" data-agent-id="12345" src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script>
+        </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

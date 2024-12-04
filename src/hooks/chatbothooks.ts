@@ -97,8 +97,12 @@ const useVoiceBackend = () => {
       console.log(data.meta_data.isFetchPaymentRequest);
 
      if(data.meta_data.isFetchPaymentRequest){
-      if (!address) {
-        const res = await fetchRequests("0xFf43E33C40276FEEff426C5448cF3AD9df6b5741");
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: "bot", text: data.text },
+      ]);
+      if (address) {
+        const res = await fetchRequests(address);
         console.log("RES:", res);
         if (res) {
           if (Array.isArray(res)) {
@@ -118,12 +122,21 @@ const useVoiceBackend = () => {
                 { sender: "bot", text: responseText },
               ]);
             });
+          }else{
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { sender: "bot", text: "Unable to fetch your invoice" },
+            ]);
           }
         }        
 }
 
       }
-      if(data.intent=="finalJson"){
+      else if(data.intent=="finalJson"){
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: "bot", text: data.text },
+        ]);
         const extraData = data.meta_data?.extra || {};
           if (!provider) {
               setError("No wallet client available.");
@@ -144,40 +157,40 @@ const useVoiceBackend = () => {
               });
   
               const requestCreateParameters: Types.ICreateRequestParameters = {
-                  requestInfo: {
-                      currency: {
-                          type: Types.RequestLogic.CURRENCY.ERC20,
-                          value: "0x0EC435037161ACd3bB94eb8DF5BC269f17A4E1b9",
-                          network: "sepolia",
-                      },
-                      expectedAmount: parseUnits(
-                          data.amount,
-                          Number(6),
-                      ).toString(),
-                      payee: {
-                          type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
-                          value: address as string,
-                      },
-                      timestamp: Utils.getCurrentTimestampInSecond(),
-                  },
-                  paymentNetwork: {
-                      id: Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT,
-                      parameters: {
-                          paymentNetworkName: "sepolia",
-                          paymentAddress: data.recipientAddress || address,
-                          feeAddress: zeroAddress,
-                          feeAmount: "0",
-                      },
-                  },
-                  contentData: {
-                      reason: data.reason,
-                      ...extraData
-                  },
-                  signer: {
-                      type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
-                      value: address as string,
-                  },
-              };
+                requestInfo: {
+                    currency: {
+                        type: Types.RequestLogic.CURRENCY.ERC20,
+                        value: "0x0EC435037161ACd3bB94eb8DF5BC269f17A4E1b9",
+                        network: "sepolia",
+                    },
+                    expectedAmount: parseUnits(
+                        data.meta_data.amount                          ,
+                        7,
+                    ).toString(),
+                    payee: {
+                        type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
+                        value: address as string,
+                    },
+                    timestamp: Utils.getCurrentTimestampInSecond(),
+                },
+                paymentNetwork: {
+                    id: Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT,
+                    parameters: {
+                        paymentNetworkName: "sepolia",
+                        paymentAddress: data.recipientAddress || address,
+                        feeAddress: zeroAddress,
+                        feeAmount: "0",
+                    },
+                },
+                contentData: {
+                    reason: data.reason,
+                    ...extraData
+                },
+                signer: {
+                    type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
+                    value: address as string,
+                },
+            };
   
               if (data.payerAddress) {
                   requestCreateParameters.requestInfo.payer = {
@@ -198,14 +211,17 @@ const useVoiceBackend = () => {
           } catch (error:any) {
               console.error('Error creating request:', error);
               setError('Failed to create request');
+              setMessages((prevMessages) => [
+                ...prevMessages,
+                { sender: "bot", text: "Unable to create your invoice" },
+              ]);
               setStatus(APP_STATUS.ERROR_OCCURRED);
               console.log("Error:", error)
-              alert(error.message);
+              // alert(error.message);
           } finally {
               setLoading(false);
           }
-      }
-    //   if(data.data. )
+      }else{
       // Extract the text from the response and store it in the messages state
       const botMessage = data.text || "No response from bot";
       
@@ -214,6 +230,7 @@ const useVoiceBackend = () => {
         ...prevMessages,
         { sender: "bot", text: botMessage },
       ]);
+    }
     } catch (error) {
       console.error("Error during request:", error);
       setMessages((prevMessages) => [

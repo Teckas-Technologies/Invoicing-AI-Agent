@@ -2,17 +2,20 @@ import useVoiceBackend from "@/hooks/chatbothooks";
 import { useState, useEffect, useRef } from "react";
 import { useAccount } from "wagmi";
 
-export default function ChatBot() {
+export default function ChatBot({ agentId }: { agentId: any }) {
   const { sessionId, messages, isloading, sendRequest } = useVoiceBackend();
   const [query, setQuery] = useState("");
+  const [wallet,setWallet] = useState("false");
   const { address, isConnecting, isConnected, isDisconnected } = useAccount();
 
   // Ref for the chat area with proper typing
-  const chatContainerRef = useRef<HTMLDivElement>(null);
-
+  const chatContainerRef = useRef<HTMLDivElement>(null)
   const handleSendMessage = () => {
     if (query.trim() !== "") {
-      sendRequest(query, "true", "884429");
+      if(isConnected){
+        setWallet("true");
+      }
+      sendRequest(query,wallet, agentId);
       setQuery("");
     }
   };
@@ -22,12 +25,12 @@ export default function ChatBot() {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isloading]);
 
   return (
-    <div className="flex flex-col h-screen bg-[#f5f5f5] text-gray-800">
+    <div className="flex flex-col rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-xl h-[90vh] bg-[#f5f5f5] text-gray-800">
       {/* Header */}
-      <header className="flex-shrink-0 w-full flex justify-between items-center bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white py-4 px-6 shadow-md">
+      <header className="flex-shrink-0 w-full rounded-tl-xl rounded-tr-xl flex justify-between items-center bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white py-4 px-6 shadow-md">
         <h1 className="text-xl font-bold">Chatbot</h1>
       </header>
 
@@ -56,11 +59,25 @@ export default function ChatBot() {
               </div>
             </div>
           ))}
+          
+          {/* Typing Indicator */}
+          {isloading && (
+            <div className="flex justify-start">
+              <div className="p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800">
+                <span className="flex items-center gap-1">
+                  <div className="animate-pulse">•</div>
+                  <div className="animate-pulse delay-100">•</div>
+                  <div className="animate-pulse delay-200">•</div>
+                  <span className="ml-2">Bot is typing...</span>
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
       {/* Footer (Input Area) */}
-      <footer className="flex-shrink-0 w-full flex items-center gap-4 p-4 bg-white shadow-md">
+      <footer className="flex-shrink-0 w-full rounded-bl-xl rounded-br-xl flex items-center gap-4 p-4 bg-white shadow-md">
         <input
           type="text"
           value={query}
@@ -71,10 +88,11 @@ export default function ChatBot() {
         <button
           onClick={handleSendMessage}
           className={`p-3 w-[100px] text-center rounded-lg shadow-md text-white bg-gradient-to-r from-[#0BB489] to-[#0AA178] hover:opacity-90 transition-all ${
-            isloading ? "cursor-not-allowed animate-pulse" : ""
+            isloading ? "cursor-not-allowed" : ""
           }`}
+          disabled={isloading}
         >
-          {isloading ? "Sending..." : "Send"}
+          Send
         </button>
       </footer>
     </div>
