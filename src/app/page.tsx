@@ -42,7 +42,6 @@ export default function Home() {
     <main className="relative flex flex-col w-full items-center overflow-x-hidden min-h-[100vh] overflow-x-hidden">
       <Header />
       {/* <CreateRequestForm /> */}
-      <RequestTabs />
       {/* <RequestTabs /> */}
       <ChatBot/>
       {/* <SampleCode /> */}

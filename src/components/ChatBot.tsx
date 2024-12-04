@@ -1,41 +1,56 @@
 import useVoiceBackend from "@/hooks/chatbothooks";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAccount } from "wagmi";
 
 export default function ChatBot() {
   const { sessionId, messages, isloading, sendRequest } = useVoiceBackend();
   const [query, setQuery] = useState("");
-  const { address, isConnecting,isConnected, isDisconnected } = useAccount();
+  const { address, isConnecting, isConnected, isDisconnected } = useAccount();
+
+  // Ref for the chat area with proper typing
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const handleSendMessage = () => {
     if (query.trim() !== "") {
-      sendRequest(query, "true", "884429"); 
-      setQuery(""); 
+      sendRequest(query, "true", "884429");
+      setQuery("");
     }
   };
 
+  // Scroll to the latest message
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-[#f5f5f5] text-gray-800">
       {/* Header */}
-      <header className="flex-shrink-0 w-full flex justify-between items-center bg-blue-600 text-white py-4 px-6">
+      <header className="flex-shrink-0 w-full flex justify-between items-center bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white py-4 px-6 shadow-md">
         <h1 className="text-xl font-bold">Chatbot</h1>
       </header>
 
       {/* Chat Area */}
-      <main className="flex-1 bg-gray-100 overflow-y-auto p-4">
-        <div className="w-full mb-4">
+      <main
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-4"
+      >
+        <div className="w-full space-y-4">
           {/* Displaying chat messages */}
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"} mt-2`}
+              className={`flex ${
+                message.sender === "user" ? "justify-end" : "justify-start"
+              }`}
             >
               <div
-                className={`${
+                className={`p-3 rounded-lg max-w-[330px] break-words shadow-md ${
                   message.sender === "user"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-black"
-                } p-3 rounded-lg max-w-[80%]`}
+                    ? "bg-[#0BB489] text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
               >
                 {message.text}
               </div>
@@ -50,12 +65,14 @@ export default function ChatBot() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="flex-1 text-black border rounded-lg p-3 shadow-sm"
+          className="flex-1 text-black border border-gray-300 rounded-lg p-3 shadow-sm"
           placeholder="Type your message..."
         />
         <button
           onClick={handleSendMessage}
-          className="bg-blue-600 text-white p-3 rounded-lg shadow-md"
+          className={`p-3 w-[100px] text-center rounded-lg shadow-md text-white bg-gradient-to-r from-[#0BB489] to-[#0AA178] hover:opacity-90 transition-all ${
+            isloading ? "cursor-not-allowed animate-pulse" : ""
+          }`}
         >
           {isloading ? "Sending..." : "Send"}
         </button>
