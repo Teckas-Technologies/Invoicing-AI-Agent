@@ -14,7 +14,7 @@ import { useProvider } from "@/contexts/ContractProvider";
 interface Data {
     recipientAddress: string;
     currency: string;
-    payerAddress: string; // amount receiving address
+    payerAddress: string;
     amount: string;
     storageChain: string;
     dueDate: string;

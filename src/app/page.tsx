@@ -9,6 +9,7 @@ import { RequestNetwork, Types } from "@requestnetwork/request-client.js";
 import { useAccount } from "wagmi";
 import { useFetchRequests } from "@/hooks/useFetchrequest";
 import RequestTabs from "@/components/RequestTabs/RequestTabs";
+import ChatBot from "@/components/ChatBot";
 
 export default function Home() {
   const [requestData, setRequestData] = useState(null);
@@ -42,6 +43,8 @@ export default function Home() {
       <Header />
       {/* <CreateRequestForm /> */}
       <RequestTabs />
+      {/* <RequestTabs /> */}
+      <ChatBot/>
       {/* <SampleCode /> */}
     </main>
   );

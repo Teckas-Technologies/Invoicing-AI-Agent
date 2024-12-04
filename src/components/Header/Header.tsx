@@ -28,7 +28,11 @@ export const Header: React.FC = () => {
 
 
     return (
+<<<<<<< HEAD
         <div className="w-full h-auto">
+=======
+        <div className="w-full bg-gray-200 h-auto">
+>>>>>>> 91a2005 (iNital)
             <div className="header fixed z-50 top-0 w-full h-[7rem] flex md:gap-0 gap-2 md:justify-start justify-center items-center xl:px-[12rem] lg:px-[10rem] md:px-[8rem] px-3 py-2">
                 <div className="logo rounded-full hidden md:block w-[5rem] h-[5rem]">
                     <img src="/images/teckas-logo.jpg" alt="myid" className="w-full h-full object-cover rounded-full" />
@@ -44,9 +48,15 @@ export const Header: React.FC = () => {
                 </div> */}
                 <div className="right-header md:flex hidden flex justify-center items-center md:gap-[5rem] gap-[3rem]">
                     {!isConnected && !address ? <div className="connect-wallet-btn mt-6 rounded-sm cursor-pointer" onClick={handleConnectWallet}>
+<<<<<<< HEAD
                         <h2 className="text-black text-lg font-bold px-20 py-4">Connect Wallet</h2>
                     </div> : <div className="">
                         <h4 className="md:text-md text-sm font-semibold text-center leading-[1.5rem]">Connected Address: <span className="address rounded-lg" onClick={handleDisconnect}>{address}</span></h4>
+=======
+                        <h2 className="text-white text-lg font-bold px-20 py-4">Connect Wallet</h2>
+                    </div> : <div className="">
+                        <h4 className="md:text-md text-white text-sm font-semibold text-center leading-[1.5rem]">Connected Address: <span className="address rounded-lg" onClick={handleDisconnect}>{address}</span></h4>
+>>>>>>> 91a2005 (iNital)
                     </div>
                     }
                 </div>
