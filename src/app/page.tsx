@@ -18,7 +18,7 @@ export default function Home() {
   const[show,setShow] = useState(true);
   const [agent,setAgent] = useState("");
   const [accountId, setAccountId] = useState<string | null>(null);
-
+  const [walletClient,setWalletClient]= useState("");
   const handleCreateRequest = async (data: any) => {
     const response = await fetch('/api/createRequest', {
       method: 'POST',
@@ -50,9 +50,9 @@ export default function Home() {
         const params = new URLSearchParams(window.location.search);
         const agentId = params.get("agentId");
         const accountId = params.get("accountId");
-         const walletClient = params.get("walletClient");
-        alert(walletClient);
+        const walletClient = params.get("walletClient");
         console.log(walletClient);
+        setWalletClient(walletClient as string);
         if (agentId) {
           // alert(`agent${agentId}`)
           setShow(true);
@@ -80,7 +80,7 @@ export default function Home() {
       {/* <CreateRequestForm /> */}
       {/* <RequestTabs /> */}
       {show?( 
-       <ChatBot agentId={agent} accountId={accountId}/>
+       <ChatBot agentId={agent} accountId={accountId} walletClient={walletClient}/>
        ):(
         <ChatAccessDenied/>
       )} 
