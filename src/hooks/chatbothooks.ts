@@ -23,7 +23,11 @@ interface Data {
   dueDate: string;
   reason: string;
 }
-
+declare global {
+  interface Window {
+      walletClient?: any; // ethers.providers.ExternalProvider
+  }
+} 
 export enum APP_STATUS {
   AWAITING_INPUT = "awaiting input",
   SUBMITTING = "submitting",
@@ -195,7 +199,8 @@ const useVoiceBackend = () => {
       setSuccess(null);
 
       try {
-          const signatureProvider = new Web3SignatureProvider(walletClient);
+        if (typeof window !== "undefined") { console.log(window.walletClient); }
+          const signatureProvider = new Web3SignatureProvider(window.walletClient);
           const requestClient = new RequestNetwork({
               nodeConnectionConfig: {
                   baseURL: 'https://sepolia.gateway.request.network/'
