@@ -185,7 +185,7 @@ const useVoiceBackend = () => {
       }
       else if (data.intent == "finalJson") {
         const extraData = data.meta_data?.extra || {};
-        if (!provider || !walletClient) {
+        if (!walletClient) {
           setError("No wallet client available.");
           alert("No wallet client available.")
           setLoading(false);
