@@ -55,6 +55,8 @@ const useVoiceBackend = () => {
   const [status, setStatus] = useState(APP_STATUS.AWAITING_INPUT);
   const [requestData, setRequestData] = useState<Types.IRequestDataWithEvents>();
   const { provider } = useProvider();
+  const {address} = useAccount();
+  const {data:walletClient} = useWalletClient();
   const [dummyClient, setDummyClient] = useState();
   // Function to generate a unique session ID
   const generateSessionId = () => {
@@ -67,16 +69,8 @@ const useVoiceBackend = () => {
     setSessionId(session);
   }, []);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-        if (window.walletClient) {
-            setDummyClient(window.walletClient)
-        }
-        console.log("Window WAL CLI3:", window.walletClient)
-    }
-}, [window.walletClient])
   // Function to make the API call
-  const sendRequest = async (query: string, isWalletConnected: string, agentId: string, address: any,walletClient:any) => {
+  const sendRequest = async (query: string, isWalletConnected: string, agentId: string, addess: any) => {
     if (!sessionId) return;
     setIsLoading(true);
 
@@ -207,56 +201,50 @@ const useVoiceBackend = () => {
       setSuccess(null);
 
       try {
-        const signatureProvider = new Web3SignatureProvider(JSON.parse(walletClient));
-        const requestClient = new RequestNetwork({
-          nodeConnectionConfig: {
-            baseURL: 'https://sepolia.gateway.request.network/',
-          },
-          signatureProvider,
-        });
-          console.log("defauls decimals", currencies.get(data.currency)!.decimals,)
-          console.log("Parsed currency:", parseUnits(
-              data.amount,
-              currencies.get(data.currency)!.decimals
-          ).toString())
+        const extraData = data.meta_data?.extra || {};
+          const signatureProvider = new Web3SignatureProvider(walletClient);
+          const requestClient = new RequestNetwork({
+              nodeConnectionConfig: {
+                  baseURL: "https://sepolia.gateway.request.network/",
+              },
+              signatureProvider,
+          });
 
           const requestCreateParameters: Types.ICreateRequestParameters = {
-              requestInfo: {
-                  currency: {
-                      type: currencies.get(data.currency)!.type,
-                      value: currencies.get(data.currency)!.value,
-                      network: currencies.get(data.currency)!.network,
-                  },
-                  expectedAmount: parseUnits(
-                      data.amount,
-                       currencies.get(data.currency)!.decimals
-                  ).toString(),
-                  payee: {
-                      type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
-                      value: address as string,
-                  },
-                  timestamp: Utils.getCurrentTimestampInSecond(),
-              },
-              paymentNetwork: {
-                  id: Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT,
-                  parameters: {
-                      paymentNetworkName: currencies.get(data.currency)!.network,
-                      paymentAddress: data.recipientAddress || address,
-                      feeAddress: zeroAddress,
-                      feeAmount: "0",
-                  },
-              },
-              contentData: {
-                  reason: data.reason,
-                  dueDate: data.dueDate,
-                  builderId: "teckas-technologies",
-                  createdWith: "MasterAgent",
-              },
-              signer: {
-                  type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
-                  value: address as string,
-              },
-          };
+            requestInfo: {
+                currency: {
+                    type: Types.RequestLogic.CURRENCY.ERC20,
+                    value: "0x0EC435037161ACd3bB94eb8DF5BC269f17A4E1b9",
+                    network: "sepolia",
+                },
+                expectedAmount: parseUnits(
+                    data.meta_data.amount                          ,
+                    7,
+                ).toString(),
+                payee: {
+                    type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
+                    value: address as string,
+                },
+                timestamp: Utils.getCurrentTimestampInSecond(),
+            },
+            paymentNetwork: {
+                id: Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT,
+                parameters: {
+                    paymentNetworkName: "sepolia",
+                    paymentAddress: data.recipientAddress || address,
+                    feeAddress: zeroAddress,
+                    feeAmount: "0",
+                },
+            },
+            contentData: {
+                reason: data.reason,
+                ...extraData
+            },
+            signer: {
+                type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
+                value: address as string,
+            },
+        };
 
           if (data.payerAddress) {
               requestCreateParameters.requestInfo.payer = {
@@ -273,6 +261,7 @@ const useVoiceBackend = () => {
 
           setStatus(APP_STATUS.REQUEST_CONFIRMED);
           setRequestData(confirmedRequestData);
+          setSuccess(true);
           console.log("confirmedRequestData", confirmedRequestData)
           setSuccess(true)
           return { success: true }
@@ -318,4 +307,3 @@ const useVoiceBackend = () => {
 };
 
 export default useVoiceBackend;
-  
