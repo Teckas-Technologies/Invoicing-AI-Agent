@@ -65,7 +65,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
     try {
       const _hasSufficientFunds = await hasSufficientFunds({
         request: requestData,
-        address: address,
+        address: address as `0x${string}`,
         providerOptions: { provider },
       });
 
