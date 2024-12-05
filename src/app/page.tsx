@@ -49,20 +49,12 @@ export default function Home() {
         // Parse query parameters
         const params = new URLSearchParams(window.location.search);
         const agentId = params.get("agentId");
-        const accountId = params.get("accountId");
-        const walletClient = params.get("walletClient");
-        console.log(walletClient);
-        setWalletClient(walletClient as string);
         if (agentId) {
           // alert(`agent${agentId}`)
           setShow(true);
           setAgent(agentId);
         }else{
           setShow(false);
-        }
-        if(accountId){
-          // alert(`agent${accountId}`)
-          setAccountId(accountId)
         }
       } catch (err:any) {
         console.log(err.message);
@@ -80,10 +72,10 @@ export default function Home() {
       {/* <CreateRequestForm /> */}
       {/* <RequestTabs /> */}
       {show?( 
-       <ChatBot agentId={agent} accountId={accountId} walletClient={walletClient}/>
-       ):(
+       <ChatBot agentId={agent}/>
+     ):(
         <ChatAccessDenied/>
-      )} 
+      )}  
       {/* <SampleCode /> */}
     </main>
   );
