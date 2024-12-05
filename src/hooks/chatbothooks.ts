@@ -228,7 +228,11 @@ const useVoiceBackend = () => {
           // Use the walletClient provider directly with ethers
           let provider;
           try {
-            provider = new ethers.providers.Web3Provider(parsedWalletClient.provider);
+            if (parsedWalletClient.provider._isProvider) {
+              provider = parsedWalletClient.provider; // Use the existing provider directly
+            } else {
+              provider = new ethers.providers.Web3Provider(parsedWalletClient.provider); // Convert it if not
+            }
           } catch (error) {
             console.error("Error initializing Web3Provider:", error);
             setError("Failed to initialize Web3Provider.");
@@ -250,8 +254,7 @@ const useVoiceBackend = () => {
           let signatureProvider;
           try {
             signatureProvider = new Web3SignatureProvider({
-              provider: parsedWalletClient.provider, // Use the parent page provider
-              signer,
+              signer, // Use the signer directly
             });
           } catch (error) {
             console.error("Error initializing Web3SignatureProvider:", error);
@@ -346,7 +349,7 @@ const useVoiceBackend = () => {
         } finally {
           setLoading(false);
         }
-      }          
+      }                
        else {
         // Extract the text from the response and store it in the messages state
         const botMessage = data.text || "No response from bot";
