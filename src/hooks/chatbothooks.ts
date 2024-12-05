@@ -39,6 +39,7 @@ export enum APP_STATUS {
 
 const useVoiceBackend = () => {
   // State to hold the session ID, messages, and API response
+  const [isPaymentRequired, setIsPaymentRequired] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]); // Store messages
   const [isloading, setIsLoading] = useState<boolean>(false);
@@ -60,6 +61,7 @@ const useVoiceBackend = () => {
     const session = generateSessionId(); // Generate a new session ID
     setSessionId(session);
   }, []);
+  
 
   // Function to make the API call
   const sendRequest = async (query: string, isWalletConnected: string, agentId: string,address:any) => {
@@ -90,10 +92,12 @@ const useVoiceBackend = () => {
           body: JSON.stringify(payload),
         }
       );
+      console.log(response);
       const res = await response.json();
+      console.log(res);
       const data = res.data;
       console.log(data);
-      console.log(data.meta_data.isFetchPaymentRequest);
+      // console.log(data.meta_data.isFetchPaymentRequest);
 
      if(data.meta_data.isFetchPaymentRequest){
       setMessages((prevMessages) => [
@@ -105,14 +109,28 @@ const useVoiceBackend = () => {
         console.log("RES:", res);
         if (res) {
           if (Array.isArray(res)) {
+            setIsPaymentRequired(true);
             const formattedResponses = res.map((item: any, index: number) => {
-              return `Request ${index + 1}:\n` +
-                     `Reason: ${item.contentData?.reason || "N/A"}\n` +
-                     `Due Date: ${item.contentData?.dueDate || "N/A"}\n` +
-                     `Builder ID: ${item.contentData?.builderId || "N/A"}\n` +
-                     `State: ${item.state || "N/A"}\n` +
-                     `Currency: ${item.currency || "N/A"}`;
+              const reason = item.contentData?.reason || "N/A";
+              const dueDate = item.contentData?.dueDate || "N/A";
+              const builderId = item.contentData?.builderId || "N/A";
+              const state = item.state || "N/A";
+              const currency = item.currency || "N/A";
+              const status = item.balance?.balance === item.expectedAmount ? "Paid" : "Unpaid";
+              const requestId = item.requestId || "N/A";
+            
+              return `
+                Request ${index + 1}\n,
+                <br/> Reason: ${reason}\n
+                <br/> Due Date: ${dueDate}\n
+                <br/> Builder ID: ${builderId}\n
+                <br/> State: ${state}\n
+                <br/> Currency: ${currency}\n
+                <br/> Status: ${status}\n
+                <br/> RequestId: ${requestId}\n
+              `;
             });
+            
         
             // Add each formatted response to the chatbot messages
             formattedResponses.forEach((responseText: any) => {
@@ -132,10 +150,6 @@ const useVoiceBackend = () => {
 
       }
       else if(data.intent=="finalJson"){
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: "bot", text: data.text },
-        ]);
         const extraData = data.meta_data?.extra || {};
           if (!provider) {
               setError("No wallet client available.");
@@ -209,12 +223,12 @@ const useVoiceBackend = () => {
               const requestId = confirmedRequestData.requestId
               setMessages((prevMessages) => [
                 ...prevMessages,
-                { sender: "bot", text: `View your request` },
+                { sender: "bot", text: data.text },
               ]);
               setMessages((prevMessages) => [
                 ...prevMessages,
-                { sender: "bot", text: `https://scan.request.network/request/${requestId}` },
-              ]);
+                { sender: "bot", text: `<a href="https://scan.request.network/request/${requestId}" target="_blank" rel="noopener noreferrer">View Request</a>` },
+              ]);              
           } catch (error:any) {
               console.error('Error creating request:', error);
               setError('Failed to create request');
@@ -253,6 +267,7 @@ const useVoiceBackend = () => {
     sessionId,
     messages,
     isloading,
+    isPaymentRequired,
     sendRequest,
   };
 };

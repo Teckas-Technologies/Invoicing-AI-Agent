@@ -32,6 +32,22 @@ export const useFetchRequests = () => {
         }
     };
 
+    const fetchSingleRequest = async (requestId: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const request = await requestClient.fromRequestId(
+                requestId,
+            );
+            const requestData = request.getData();
+            return requestData;
+        } catch (err) {
+            setError("Error loading arts");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    return { requests, totalPage, loading, error, fetchRequests };
+
+    return { requests, totalPage, loading, error, fetchRequests, fetchSingleRequest };
 }

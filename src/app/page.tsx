@@ -19,7 +19,6 @@ export default function Home() {
   const [agent,setAgent] = useState("");
   const [accountId, setAccountId] = useState<string | null>(null);
 
-
   const handleCreateRequest = async (data: any) => {
     const response = await fetch('/api/createRequest', {
       method: 'POST',
@@ -73,14 +72,15 @@ export default function Home() {
   return (
     <main className="relative flex flex-col w-full items-center overflow-x-hidden min-h-[100vh] overflow-x-hidden">
       {/* <Header /> */}
-      {/* <Script id="chatbot" data-agent-id="12345" src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script> */}
+      <ChatBot agentId={"67500d5fd8f7b664f8bc39e8"} accountId={address}/>
+      {/* <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={"0xFf43E33C40276FEEff426C5448cF3AD9df6b5741"} src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script> */}
       {/* <CreateRequestForm /> */}
       {/* <RequestTabs /> */}
-      {show?(
+      {/* {show?( 
        <ChatBot agentId={agent} accountId={accountId}/>
       ):(
         <ChatAccessDenied/>
-      )}
+      )} */}
       {/* <SampleCode /> */}
     </main>
   );

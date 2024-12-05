@@ -3,7 +3,7 @@ import { useAccount, useWalletClient } from "wagmi";
 import { APP_STATUS } from "./useCreateRequests";
 import { RequestNetwork, Types } from "@requestnetwork/request-client.js";
 import { approveErc20, hasErc20Approval, hasSufficientFunds, payRequest } from "@requestnetwork/payment-processor";
-import { useProvider } from "@/contexts/ContractProvider";
+// import { useProvider } from "@/contexts/ContractProvider";
 import { providers, ethers } from 'ethers';
 import { useEthersV5Provider } from "@/hooks/use-ethers-v5-provider";
 import { useEthersV5Signer } from "@/hooks/use-ethers-v5-signer";
@@ -51,18 +51,20 @@ export const usePayRequest = () => {
             // TODO Add a timeout
             while (_requestData.balance?.balance! < _requestData.expectedAmount) {
                 _requestData = await _request.refresh();
-                alert(`balance = ${_requestData.balance?.balance}`);
+                // alert(`balance = ${_requestData.balance?.balance}`);
                 await new Promise((resolve) => setTimeout(resolve, 1000));
             }
-            alert(`payment detected!`);
+            // alert(`payment detected!`);
             setRequestData(_requestData);
             setStatus(APP_STATUS.REQUEST_PAID);
             setSuccess(true);
+            return { success: true }
         } catch (error) {
             console.error('Error creating request:', error);
             setError('Failed to create request');
             console.log("Error:", error)
-            alert(error);
+            return { success: false }
+            // alert(error);
         } finally {
             setLoading(false);
         }
