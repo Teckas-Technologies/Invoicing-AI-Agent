@@ -185,169 +185,97 @@ const useVoiceBackend = () => {
 
       }
       else if (data.intent === "finalJson") {
-        const extraData = data.meta_data?.extra || {};
         if (!walletClient) {
           setError("No wallet client available.");
-          alert("No wallet client available.");
           setLoading(false);
           return;
-        }
-        setLoading(true);
-        setError(null);
-        setSuccess(null);
-      
-        try {
-          let parsedWalletClient;
-          try {
-            parsedWalletClient = JSON.parse(walletClient);
-            console.log("Parsed walletClient:", parsedWalletClient);
-          } catch (error) {
-            console.error("Error parsing walletClient JSON:", error);
-            setError("Invalid wallet client data.");
-            setLoading(false);
-            return;
-          }
-      
-          
-      
-          const rpcUrl = walletClient.chain.rpcUrls?.default?.http?.[0];
-const accountAddress = walletClient.account?.address;
+      }
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
 
-if (!rpcUrl) {
-  console.error("Missing RPC URL in walletClient.");
-  setError("Missing RPC URL.");
-  setLoading(false);
-  return;
-}
-
-if (!accountAddress) {
-  console.error("Missing account address in walletClient.");
-  setError("Missing account address.");
-  setLoading(false);
-  return;
-}
-
-let provider;
-try {
-  provider = new ethers.providers.JsonRpcProvider(rpcUrl); // Initialize provider with RPC URL
-} catch (error) {
-  console.error("Error initializing provider:", error);
-  setError("Failed to initialize provider.");
-  setLoading(false);
-  return;
-}
-
-let signer;
-try {
-  signer = provider.getSigner(accountAddress); // Get signer using the account address
-} catch (error) {
-  console.error("Error initializing signer:", error);
-  setError("Failed to initialize signer.");
-  setLoading(false);
-  return;
-}
-
-// Now you can proceed with the Web3SignatureProvider
-let signatureProvider;
-try {
-  signatureProvider = new Web3SignatureProvider({
-    provider: provider,
-    signer: signer,
-  });
-} catch (error) {
-  console.error("Error initializing Web3SignatureProvider:", error);
-  setError("Failed to initialize Web3SignatureProvider.");
-  setLoading(false);
-  return;
-}
-      
+      try {
+          const signatureProvider = new Web3SignatureProvider(walletClient);
           const requestClient = new RequestNetwork({
-            nodeConnectionConfig: {
-              baseURL: "https://sepolia.gateway.request.network/",
-            },
-            signatureProvider,
+              nodeConnectionConfig: {
+                  baseURL: 'https://sepolia.gateway.request.network/'
+              },
+              signatureProvider,
           });
-      
-          alert("step1");
-      
+
+          console.log("defauls decimals", currencies.get(data.currency)!.decimals,)
+          console.log("Parsed currency:", parseUnits(
+              data.amount,
+              currencies.get(data.currency)!.decimals
+          ).toString())
+
           const requestCreateParameters: Types.ICreateRequestParameters = {
-            requestInfo: {
-              currency: {
-                type: Types.RequestLogic.CURRENCY.ERC20,
-                value: "0x0EC435037161ACd3bB94eb8DF5BC269f17A4E1b9",
-                network: "sepolia",
+              requestInfo: {
+                  currency: {
+                      type: currencies.get(data.currency)!.type,
+                      value: currencies.get(data.currency)!.value,
+                      network: currencies.get(data.currency)!.network,
+                  },
+                  expectedAmount: parseUnits(
+                      data.amount,
+                       currencies.get(data.currency)!.decimals
+                  ).toString(),
+                  payee: {
+                      type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
+                      value: address as string,
+                  },
+                  timestamp: Utils.getCurrentTimestampInSecond(),
               },
-              expectedAmount: parseUnits(data.meta_data.amount, 7).toString(),
-              payee: {
-                type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
-                value: address as string,
+              paymentNetwork: {
+                  id: Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT,
+                  parameters: {
+                      paymentNetworkName: currencies.get(data.currency)!.network,
+                      paymentAddress: data.recipientAddress || address,
+                      feeAddress: zeroAddress,
+                      feeAmount: "0",
+                  },
               },
-              timestamp: Utils.getCurrentTimestampInSecond(),
-            },
-            paymentNetwork: {
-              id: Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT,
-              parameters: {
-                paymentNetworkName: "sepolia",
-                paymentAddress: data.recipientAddress || address,
-                feeAddress: zeroAddress,
-                feeAmount: "0",
+              contentData: {
+                  reason: data.reason,
+                  dueDate: data.dueDate,
+                  builderId: "teckas-technologies",
+                  createdWith: "MasterAgent",
               },
-            },
-            contentData: {
-              reason: data.reason,
-              ...extraData,
-            },
-            signer: {
-              type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
-              value: address as string,
-            },
+              signer: {
+                  type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
+                  value: address as string,
+              },
           };
-      
-          alert("step2");
-      
+
           if (data.payerAddress) {
-            requestCreateParameters.requestInfo.payer = {
-              type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
-              value: data.payerAddress,
-            };
+              requestCreateParameters.requestInfo.payer = {
+                  type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
+                  value: data.payerAddress,
+              };
           }
-      
-          alert("step3");
+
           setStatus(APP_STATUS.PERSISTING_TO_IPFS);
-      
           const request = await requestClient.createRequest(requestCreateParameters);
           setStatus(APP_STATUS.PERSISTING_ON_CHAIN);
           setRequestData(request.getData());
           const confirmedRequestData = await request.waitForConfirmation();
-      
+
           setStatus(APP_STATUS.REQUEST_CONFIRMED);
           setRequestData(confirmedRequestData);
-          alert("step4");
-      
-          const requestId = confirmedRequestData.requestId;
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { sender: "bot", text: data.text },
-          ]);
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            {
-              sender: "bot",
-              text: `https://scan.request.network/request/${requestId}`,
-            },
-          ]);
-        } catch (error: any) {
-          console.error("Error creating request:", error);
-          setError("Failed to create request.");
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { sender: "bot", text: "Unable to create your invoice" },
-          ]);
+          console.log("confirmedRequestData", confirmedRequestData)
+          setSuccess(true)
+          return { success: true }
+      } catch (error) {
+          console.error('Error creating request:', error);
+          setError('Failed to create request');
           setStatus(APP_STATUS.ERROR_OCCURRED);
-        } finally {
+          console.log("Error:", error)
+          alert(error);
+          return { success: false }
+      } finally {
           setLoading(false);
-        }
-      }                
+      }
+  }               
        else {
         // Extract the text from the response and store it in the messages state
         const botMessage = data.text || "No response from bot";
