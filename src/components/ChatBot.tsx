@@ -3,13 +3,14 @@ import { useEthersV5Provider } from "@/hooks/use-ethers-v5-provider";
 import { useEthersV5Signer } from "@/hooks/use-ethers-v5-signer";
 import { useFetchRequests } from "@/hooks/useFetchrequest";
 import { usePayRequest } from "@/hooks/usePayRequest";
+import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { getPaymentNetworkExtension } from "@requestnetwork/payment-detection";
 import { approveErc20, hasErc20Approval, hasSufficientFunds } from "@requestnetwork/payment-processor";
 import { Types } from "@requestnetwork/request-client.js";
 import { useState, useEffect, useRef } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 
-export default function ChatBot({ agentId ,accountId,walletClient}: { agentId: any, accountId: any ,walletClient:any}) {
+export default function ChatBot({ agentId}: { agentId: any}) {
   const { sessionId, messages, isloading, isPaymentRequired, sendRequest } = useVoiceBackend();
   const [query, setQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState<string>("");  // Added error state
@@ -21,6 +22,19 @@ export default function ChatBot({ agentId ,accountId,walletClient}: { agentId: a
   const { fetchSingleRequest } = useFetchRequests();
   const [ error,setError] = useState(false);
   const [ success,setSuccess] = useState(false);
+  const { isConnected } = useAppKitAccount();
+  const { address} = useAccount();
+  const { open } = useAppKit();
+  const { disconnect } = useDisconnect();
+
+  const handleConnectWallet = () => {
+      open({ view: 'Connect' });
+  }
+
+  const handleDisconnect = () => {
+      disconnect();
+      // open({ view: 'Account' });
+  }
 
 
   const extractStatus = (message: string): string | null => {
@@ -37,11 +51,11 @@ export default function ChatBot({ agentId ,accountId,walletClient}: { agentId: a
 
   const handleSendMessage = () => {
     if (query.trim() !== "") {
-      if (accountId && accountId.trim() !== ""&& accountId !== "null") {
-        sendRequest(query, "true", agentId, accountId,walletClient);
+      if (isConnected) {
+        sendRequest(query, "true", agentId, address);
         setQuery("");
       } else {
-        sendRequest(query, "false", agentId, accountId,walletClient);
+        sendRequest(query, "false", agentId, address);
         setQuery("");
       }
     }
@@ -51,7 +65,7 @@ export default function ChatBot({ agentId ,accountId,walletClient}: { agentId: a
     try {
       const _hasSufficientFunds = await hasSufficientFunds({
         request: requestData,
-        address: accountId as string,
+        address: address,
         providerOptions: { provider },
       });
 
@@ -63,7 +77,7 @@ export default function ChatBot({ agentId ,accountId,walletClient}: { agentId: a
 
       if (getPaymentNetworkExtension(requestData)?.id === Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT) {
         try {
-          const _hasErc20Approval = await hasErc20Approval(requestData, accountId as string, provider);
+          const _hasErc20Approval = await hasErc20Approval(requestData, address as string, provider);
           if (!_hasErc20Approval) {
             const approvalTx = await approveErc20(requestData, signer);
             await approvalTx.wait(2);
@@ -132,6 +146,16 @@ export default function ChatBot({ agentId ,accountId,walletClient}: { agentId: a
     <div className="flex flex-col rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-xl h-screen bg-[#f5f5f5] text-gray-800">
       <header className="flex-shrink-0 w-full rounded-tl-xl rounded-tr-xl flex justify-between items-center bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white py-4 px-6 shadow-md">
         <h1 className="text-xl font-bold">Chatbot</h1>
+        {!isConnected?(
+          <div onClick={handleConnectWallet}>
+        <h1 className="text-xl font-bold cursor-pointer">connect</h1>
+        </div>
+        ):(
+          <div onClick={handleDisconnect}>
+          <h1 className="text-xl font-bold cursor-pointer">view</h1>
+          </div>
+        )}
+        
       </header>
       <main ref={chatContainerRef} className="flex-1 overflow-y-auto p-4">
         <div className="w-full space-y-4">
