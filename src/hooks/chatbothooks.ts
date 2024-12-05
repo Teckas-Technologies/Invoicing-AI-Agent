@@ -80,7 +80,7 @@ const useVoiceBackend = () => {
       ...prevMessages,
       { sender: "user", text: query },
     ]);
-    console.log(address);
+
     try {
       const response = await fetch(
         "https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/voice-backend",
@@ -203,7 +203,7 @@ const useVoiceBackend = () => {
             },
             signatureProvider,
           });
-
+          alert("step1")
           const requestCreateParameters: Types.ICreateRequestParameters = {
             requestInfo: {
               currency: {
@@ -239,6 +239,7 @@ const useVoiceBackend = () => {
               value: address as string,
             },
           };
+          alert("step2")
 
           if (data.payerAddress) {
             requestCreateParameters.requestInfo.payer = {
@@ -246,7 +247,7 @@ const useVoiceBackend = () => {
               value: data.payerAddress,
             };
           }
-
+          alert("step3")
           setStatus(APP_STATUS.PERSISTING_TO_IPFS);
           const request = await requestClient.createRequest(requestCreateParameters);
           setStatus(APP_STATUS.PERSISTING_ON_CHAIN);
@@ -255,6 +256,7 @@ const useVoiceBackend = () => {
 
           setStatus(APP_STATUS.REQUEST_CONFIRMED);
           setRequestData(confirmedRequestData);
+          alert("step4")
           const requestId = confirmedRequestData.requestId
           setMessages((prevMessages) => [
             ...prevMessages,
