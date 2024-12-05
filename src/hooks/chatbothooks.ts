@@ -55,6 +55,7 @@ const useVoiceBackend = () => {
   const [status, setStatus] = useState(APP_STATUS.AWAITING_INPUT);
   const [requestData, setRequestData] = useState<Types.IRequestDataWithEvents>();
   const { provider } = useProvider();
+  const [dummyClient, setDummyClient] = useState();
   // Function to generate a unique session ID
   const generateSessionId = () => {
     return `session-${Math.random().toString(36).substring(2, 15)}`;
@@ -66,7 +67,14 @@ const useVoiceBackend = () => {
     setSessionId(session);
   }, []);
 
-
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+        if (window.walletClient) {
+            setDummyClient(window.walletClient)
+        }
+        console.log("Window WAL CLI3:", window.walletClient)
+    }
+}, [window.walletClient])
   // Function to make the API call
   const sendRequest = async (query: string, isWalletConnected: string, agentId: string, address: any,walletClient:any) => {
     if (!sessionId) return;
@@ -189,7 +197,7 @@ const useVoiceBackend = () => {
 
       }
       else if (data.intent === "finalJson") {
-        if (!walletClient) {
+        if (!dummyClient) {
           setError("No wallet client available.");
           setLoading(false);
           return;
@@ -199,8 +207,7 @@ const useVoiceBackend = () => {
       setSuccess(null);
 
       try {
-        if (typeof window !== "undefined") { console.log(window.walletClient); }
-          const signatureProvider = new Web3SignatureProvider(window.walletClient);
+          const signatureProvider = new Web3SignatureProvider(dummyClient);
           const requestClient = new RequestNetwork({
               nodeConnectionConfig: {
                   baseURL: 'https://sepolia.gateway.request.network/'
