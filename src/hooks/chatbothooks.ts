@@ -207,14 +207,13 @@ const useVoiceBackend = () => {
       setSuccess(null);
 
       try {
-          const signatureProvider = new Web3SignatureProvider(JSON.parse(walletClient));
-          const requestClient = new RequestNetwork({
-              nodeConnectionConfig: {
-                  baseURL: 'https://sepolia.gateway.request.network/'
-              },
-              signatureProvider,
-          });
-
+        const signatureProvider = new Web3SignatureProvider(walletClient);
+        const requestClient = new RequestNetwork({
+          nodeConnectionConfig: {
+            baseURL: 'https://sepolia.gateway.request.network/',
+          },
+          signatureProvider,
+        });
           console.log("defauls decimals", currencies.get(data.currency)!.decimals,)
           console.log("Parsed currency:", parseUnits(
               data.amount,
@@ -319,3 +318,4 @@ const useVoiceBackend = () => {
 };
 
 export default useVoiceBackend;
+  
