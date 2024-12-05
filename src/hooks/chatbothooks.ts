@@ -12,6 +12,7 @@ import {
 } from "@requestnetwork/request-client.js";
 import { Web3SignatureProvider } from "@requestnetwork/web3-signature";
 import { useProvider } from "@/contexts/ContractProvider";
+import { ethers } from "ethers";
 
 interface Data {
   recipientAddress: string;
@@ -185,7 +186,7 @@ const useVoiceBackend = () => {
       }
       else if (data.intent == "finalJson") {
         const extraData = data.meta_data?.extra || {};
-        if (!walletClient) {
+        if (!provider || !walletClient) {
           setError("No wallet client available.");
           alert("No wallet client available.")
           setLoading(false);
@@ -196,14 +197,36 @@ const useVoiceBackend = () => {
         setSuccess(null);
 
         try {
-          const walletClien = JSON.parse(walletClient);
-          const signatureProvider = new Web3SignatureProvider(walletClien);
+          let parsedWalletClient;
+          try {
+            parsedWalletClient = JSON.parse(walletClient);
+            console.log("Parsed walletClient:", parsedWalletClient);
+          } catch (error) {
+            console.error("Error parsing walletClient JSON:", error);
+            setError("Invalid wallet client data.");
+            setLoading(false);
+            return;
+          }
+
+          const rpcUrl = parsedWalletClient?.chain?.rpcUrls?.default?.http?.[0];
+
+          if (!rpcUrl) {
+            console.error("Missing RPC URL in walletClient");
+            setError("Missing RPC URL.");
+            setLoading(false);
+            return;
+          }
+
+          const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+          const signatureProvider = new Web3SignatureProvider(provider);
+
           const requestClient = new RequestNetwork({
             nodeConnectionConfig: {
               baseURL: "https://sepolia.gateway.request.network/",
             },
             signatureProvider,
           });
+
           alert("step1")
           const requestCreateParameters: Types.ICreateRequestParameters = {
             requestInfo: {
