@@ -22,6 +22,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
   const { fetchSingleRequest } = useFetchRequests();
   const [ error,setError] = useState(false);
   const [ success,setSuccess] = useState(false);
+  const [ isPay,setIsPay] = useState(false);
   const { isConnected } = useAppKitAccount();
   const { address} = useAccount();
   const { open } = useAppKit();
@@ -52,10 +53,10 @@ export default function ChatBot({ agentId}: { agentId: any}) {
   const handleSendMessage = () => {
     if (query.trim() !== "") {
       if (isConnected) {
-        sendRequest(query, "true", agentId, address);
+        sendRequest(query, "true", agentId);
         setQuery("");
       } else {
-        sendRequest(query, "false", agentId, address);
+        sendRequest(query, "false", agentId);
         setQuery("");
       }
     }
@@ -98,6 +99,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
 
   const handlePay = async (requestId: string) => {
     try {
+      setIsPay(true)
       const requestData = await fetchSingleRequest(requestId);
       if (!requestData) {
         setError(true);
@@ -115,21 +117,27 @@ export default function ChatBot({ agentId}: { agentId: any}) {
       try {
         const res = await payTheRequest({ requestId });
         if (res?.success) {
+          setIsPay(false)
           setSuccess(true);
           setSuccessMessage("Payment Successfull");
+          setSuccess(false);
           setError(false);
           setErrorMessage(""); 
         } else {
+          setIsPay(false)
           setError(true);
           setErrorMessage("Payment failed.");
         }
+        setIsPay(false)
       } catch (paymentError) {
         setError(true);
+        setIsPay(false)
         setErrorMessage("Payment failed.");
         console.error("Error in payment:", paymentError);
       }
     } catch (error) {
       setError(true);
+      setIsPay(false)
       setErrorMessage("Something went wrong while processing payment.");
       console.error("Error in handlePay:", error);
     }
@@ -144,11 +152,11 @@ export default function ChatBot({ agentId}: { agentId: any}) {
 
   return (
     <div className="flex flex-col rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-xl h-screen bg-[#f5f5f5] text-gray-800">
-      <header className="flex-shrink-0 w-full rounded-tl-xl rounded-tr-xl flex justify-between items-center bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white py-4 px-6 shadow-md">
-        <h1 className="text-xl font-bold">Chatbot</h1>
+      <header className="flex-shrink-0 w-full rounded-tl-xl rounded-tr-xl flex justify-start gap-4 items-center bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white py-4 px-6 shadow-md">
+        <h1 className="text-xl font-bold">Invoicing Agent</h1>
         {!isConnected?(
-          <div onClick={handleConnectWallet}>
-        <h1 className="text-xl font-bold cursor-pointer">connect</h1>
+          <div className="px-5 py-1 bg-gray-200 rounded-md shadow-md" onClick={handleConnectWallet}>
+        <h1 className="text-xl font-bold cursor-pointer text-[#0BB489]">connect</h1>
         </div>
         ):(
           <div onClick={handleDisconnect}>
@@ -159,29 +167,6 @@ export default function ChatBot({ agentId}: { agentId: any}) {
       </header>
       <main ref={chatContainerRef} className="flex-1 overflow-y-auto p-4">
         <div className="w-full space-y-4">
-        {error&&(
-          <>
-                <div className={`flex justify-start`}>
-                  <div
-                    className={`p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800`}
-                    >
-                       {errorMessage}
-                  </div>
-                </div>
-                </>
-              )}
-
-               {success&&(
-                <>
-                <div className={`flex justify-start`}>
-                  <div
-                    className={`p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800`}
-                     >
-                       {successMessage}
-                  </div>
-                </div>
-                </>
-              )}
           {isPaymentRequired ? (
             <>
               {messages.map((message, index) => {
@@ -195,7 +180,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
                         message.sender === "user" ? "bg-[#0BB489] text-white" : "bg-gray-200 text-gray-800"
                       }`}
                     >
-                         {message.text}
+                        <p  dangerouslySetInnerHTML={{ __html: message.text }}></p>
                       {status === "Unpaid" && message.sender !== "user" ? (
                         <button
                           onClick={() => handlePay(requestId as string)}
@@ -209,7 +194,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
                       >
                         View
                       </a>
-                      ):null}
+                      ):null} 
                     </div>
                   </div>
                 );
@@ -232,7 +217,44 @@ export default function ChatBot({ agentId}: { agentId: any}) {
           )}
 
           {/* Typing Indicator */}
-          {isloading && (
+
+{error&&(
+          <>
+                <div className={`flex justify-start`}>
+                  <div
+                    className={`p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800`}
+                    >
+                       {errorMessage}
+                  </div>
+                </div>
+                </>
+              )}
+
+               {success&&(
+                <>
+                <div className={`flex justify-start`}>
+                  <div
+                    className={`p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800`}
+                     >
+                       {successMessage}
+                  </div>
+                </div>
+                </>
+              )}
+               {isPay&&(
+                 <div className="flex justify-start">
+                   <div className="p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800">
+                   <span className="flex items-center gap-1">
+                   <span className="ml-2">Paying</span>
+                     <div className="animate-pulse">•</div>
+                     <div className="animate-pulse delay-100">•</div>
+                     <div className="animate-pulse delay-200">•</div>
+                   </span>
+                   </div>
+                   </div>
+              )}
+
+{isloading && (
             <div className="flex justify-start">
               <div className="p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800">
                 <span className="flex items-center gap-1">
@@ -244,6 +266,9 @@ export default function ChatBot({ agentId}: { agentId: any}) {
               </div>
             </div>
           )}
+         
+              
+
         </div>
       </main>
 
@@ -255,6 +280,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
           onChange={(e) => setQuery(e.target.value)}
           className="flex-1 text-black border border-gray-300 rounded-lg p-3 shadow-sm"
           placeholder="Type your message..."
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
         />
         <button
           onClick={handleSendMessage}
