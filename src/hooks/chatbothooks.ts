@@ -66,9 +66,6 @@ const useVoiceBackend = () => {
   // Function to make the API call
   const sendRequest = async (query: string, isWalletConnected: string, agentId: string,address:any) => {
     if (!sessionId) return;
-    alert(`step 1:${isWalletConnected}`)
-    alert(`step 1:${agentId}`)
-    alert(`step 1:${address}`)
     setIsLoading(true);
 
     const payload = {
@@ -76,6 +73,7 @@ const useVoiceBackend = () => {
       prompt: JSON.stringify({ query, isWalletConnected }),
       agentId: agentId,
     };
+    console.log(payload)
 
     // Add the user's message to the state before sending the request
     setMessages((prevMessages) => [
@@ -96,7 +94,7 @@ const useVoiceBackend = () => {
       );
       console.log(response);
       const res = await response.json();
-      alert(res);
+      console.log(res)
       console.log(res);
       const data = res.data;
       console.log(data);
@@ -255,8 +253,8 @@ const useVoiceBackend = () => {
         { sender: "bot", text: botMessage },
       ]);
     }
-    } catch (error) {
-      console.error("Error during request:", error);
+    } catch (error:any) {
+      console.error("Error during request:", error.message);
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "bot", text: "Something went wrong!" },
