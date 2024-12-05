@@ -207,7 +207,7 @@ const useVoiceBackend = () => {
       setSuccess(null);
 
       try {
-        const signatureProvider = new Web3SignatureProvider(walletClient);
+        const signatureProvider = new Web3SignatureProvider(JSON.parse(walletClient));
         const requestClient = new RequestNetwork({
           nodeConnectionConfig: {
             baseURL: 'https://sepolia.gateway.request.network/',
