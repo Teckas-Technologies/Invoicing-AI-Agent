@@ -9,7 +9,7 @@ import { Types } from "@requestnetwork/request-client.js";
 import { useState, useEffect, useRef } from "react";
 import { useAccount } from "wagmi";
 
-export default function ChatBot({ agentId ,accountId}: { agentId: any, accountId: any }) {
+export default function ChatBot({ agentId ,accountId,walletClient}: { agentId: any, accountId: any ,walletClient:any}) {
   const { sessionId, messages, isloading, isPaymentRequired, sendRequest } = useVoiceBackend();
   const [query, setQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState<string>("");  // Added error state
@@ -37,11 +37,11 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any, accountId
 
   const handleSendMessage = () => {
     if (query.trim() !== "") {
-         if (accountId && accountId.trim() !== ""&& accountId !== "null") {
-        sendRequest(query, "true", agentId, accountId);
+      if (accountId && accountId.trim() !== ""&& accountId !== "null") {
+        sendRequest(query, "true", agentId, accountId,walletClient);
         setQuery("");
       } else {
-        sendRequest(query, "false", agentId, accountId);
+        sendRequest(query, "false", agentId, accountId,walletClient);
         setQuery("");
       }
     }
