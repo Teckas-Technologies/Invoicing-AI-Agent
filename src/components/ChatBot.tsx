@@ -181,7 +181,7 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any, accountId
                         </button>
                       ):(
                         <a href={`https://scan.request.network/request/${requestId}`}
-                        className="ml-2 p-2 text-sm bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white rounded-lg shadow hover:opacity-90"
+                        className="ml-2 mt-2 p-2 text-sm bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white rounded-lg shadow hover:opacity-90"
                       >
                         View
                       </a>
