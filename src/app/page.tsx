@@ -16,7 +16,7 @@ import ChatAccessDenied from "@/components/Access";
 export default function Home() {
   const [requestData, setRequestData] = useState(null);
   const[show,setShow] = useState(true);
-  const [agent,setAgent] = useState("");
+  const [agent,setAgent] = useState("6751bbe4b078ade1be331d7b");
   const [accountId, setAccountId] = useState<string | null>(null);
   const [walletClient,setWalletClient]= useState("");
   const handleCreateRequest = async (data: any) => {
@@ -32,16 +32,6 @@ export default function Home() {
   const { address, isConnecting, isDisconnected } = useAccount();
   const { fetchRequests } = useFetchRequests();
 
-  useEffect(() => {
-    const getRequests = async () => {
-      if (address) {
-        const res = await fetchRequests(address);
-        console.log("RES:", res);
-      }
-    }
-    getRequests();
-
-  }, [address])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,7 +63,7 @@ export default function Home() {
       {/* <RequestTabs /> */}
       {show?( 
        <ChatBot agentId={agent}/>
-     ):(
+      ):(
         <ChatAccessDenied/>
       )}  
       {/* <SampleCode /> */}
