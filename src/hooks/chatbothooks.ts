@@ -47,7 +47,6 @@ const useVoiceBackend = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean | null>(null);
-  const { data: walletClient, isError, isLoading } = useWalletClient();
   const [status, setStatus] = useState(APP_STATUS.AWAITING_INPUT);
   const [requestData, setRequestData] = useState<Types.IRequestDataWithEvents>();
   const { provider } = useProvider();
@@ -64,7 +63,7 @@ const useVoiceBackend = () => {
 
 
   // Function to make the API call
-  const sendRequest = async (query: string, isWalletConnected: string, agentId: string, address: any) => {
+  const sendRequest = async (query: string, isWalletConnected: string, agentId: string, address: any,walletClient:any) => {
     if (!sessionId) return;
     setIsLoading(true);
 
@@ -186,7 +185,7 @@ const useVoiceBackend = () => {
       }
       else if (data.intent == "finalJson") {
         const extraData = data.meta_data?.extra || {};
- if (!provider || !walletClient) {
+        if (!provider || !walletClient) {
           setError("No wallet client available.");
           alert("No wallet client available.")
           setLoading(false);
@@ -197,7 +196,8 @@ const useVoiceBackend = () => {
         setSuccess(null);
 
         try {
-          const signatureProvider = new Web3SignatureProvider(walletClient);
+          const walletClien = JSON.parse(walletClient);
+          const signatureProvider = new Web3SignatureProvider(walletClien);
           const requestClient = new RequestNetwork({
             nodeConnectionConfig: {
               baseURL: "https://sepolia.gateway.request.network/",
