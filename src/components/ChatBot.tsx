@@ -140,8 +140,8 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any, accountId
                 <div className={`flex justify-start`}>
                   <div
                     className={`p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800`}
-                    dangerouslySetInnerHTML={{ __html: errorMessage }} >
-                    
+                    >
+                       {errorMessage}
                   </div>
                 </div>
                 </>
@@ -152,8 +152,8 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any, accountId
                 <div className={`flex justify-start`}>
                   <div
                     className={`p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800`}
-                    dangerouslySetInnerHTML={{ __html: successMessage }} >
-                    
+                     >
+                       {successMessage}
                   </div>
                 </div>
                 </>
@@ -170,7 +170,8 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any, accountId
                       className={`p-3 rounded-lg max-w-[330px] break-words shadow-md ${
                         message.sender === "user" ? "bg-[#0BB489] text-white" : "bg-gray-200 text-gray-800"
                       }`}
-                      dangerouslySetInnerHTML={{ __html: message.text }}>
+                    >
+                         {message.text}
                       {status === "Unpaid" && message.sender !== "user" ? (
                         <button
                           onClick={() => handlePay(requestId as string)}
@@ -198,8 +199,8 @@ export default function ChatBot({ agentId ,accountId}: { agentId: any, accountId
                     className={`p-3 rounded-lg max-w-[330px] break-words shadow-md ${
                       message.sender === "user" ? "bg-[#0BB489] text-white" : "bg-gray-200 text-gray-800"
                     }`}
-                    dangerouslySetInnerHTML={{ __html: message.text }} >
-                    
+                    >
+                    {message.text}
                   </div>
                 </div>
               ))}

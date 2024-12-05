@@ -122,13 +122,13 @@ const useVoiceBackend = () => {
             
               return `
                 Request ${index + 1}\n,
-                <br/> Reason: ${reason}\n
-                <br/> Due Date: ${dueDate}\n
-                <br/> Builder ID: ${builderId}\n
-                <br/> State: ${state}\n
-                <br/> Currency: ${currency}\n
-                <br/> Status: ${status}\n
-                <br/> RequestId: ${requestId}\n
+                Reason: ${reason}\n
+                Due Date: ${dueDate}\n
+                Builder ID: ${builderId}\n
+                State: ${state}\n
+                Currency: ${currency}\n
+                Status: ${status}\n
+                RequestId: ${requestId}\n
               `;
             });
             
@@ -228,7 +228,7 @@ const useVoiceBackend = () => {
               ]);
               setMessages((prevMessages) => [
                 ...prevMessages,
-                { sender: "bot", text: `<a href="https://scan.request.network/request/${requestId}" target="_blank" rel="noopener noreferrer">View Request</a>` },
+                { sender: "bot", text: `https://scan.request.network/request/${requestId}` },
               ]);              
           } catch (error:any) {
               console.error('Error creating request:', error);
