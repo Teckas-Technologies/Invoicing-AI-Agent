@@ -50,6 +50,9 @@ export default function Home() {
         const params = new URLSearchParams(window.location.search);
         const agentId = params.get("agentId");
         const accountId = params.get("accountId");
+         const walletClient = params.get("walletClient");
+        alert(walletClient);
+        console.log(walletClient);
         if (agentId) {
           // alert(`agent${agentId}`)
           setShow(true);
