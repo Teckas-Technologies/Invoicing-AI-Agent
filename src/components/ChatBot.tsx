@@ -32,9 +32,9 @@ export default function ChatBot({ agentId}: { agentId: any}) {
       open({ view: 'Connect' });
   }
 
-  const handleDisconnect = () => {
-      disconnect();
-      // open({ view: 'Account' });
+   const handleDisconnect = () => {
+      // disconnect();
+      open({ view: 'Account' });
   }
 
 
