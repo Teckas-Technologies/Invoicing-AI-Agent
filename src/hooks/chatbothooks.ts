@@ -197,7 +197,7 @@ const useVoiceBackend = () => {
 
       }
       else if (data.intent === "finalJson") {
-        if (!dummyClient) {
+        if (!walletClient) {
           setError("No wallet client available.");
           setLoading(false);
           return;
@@ -207,7 +207,7 @@ const useVoiceBackend = () => {
       setSuccess(null);
 
       try {
-          const signatureProvider = new Web3SignatureProvider(dummyClient);
+          const signatureProvider = new Web3SignatureProvider(walletClient);
           const requestClient = new RequestNetwork({
               nodeConnectionConfig: {
                   baseURL: 'https://sepolia.gateway.request.network/'
