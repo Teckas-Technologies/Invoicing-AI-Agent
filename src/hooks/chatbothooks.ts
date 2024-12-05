@@ -208,60 +208,58 @@ const useVoiceBackend = () => {
             return;
           }
       
-          const rpcUrl = parsedWalletClient?.chain?.rpcUrls?.default?.http?.[0];
-          const accountAddress = parsedWalletClient?.account?.address;
+          
       
-          if (!rpcUrl) {
-            console.error("Missing RPC URL in walletClient");
-            setError("Missing RPC URL.");
-            setLoading(false);
-            return;
-          }
-      
-          if (!accountAddress) {
-            console.error("Missing account address in walletClient");
-            setError("Missing account address.");
-            setLoading(false);
-            return;
-          }
-      
-          // Use the walletClient provider directly with ethers
-          let provider;
-          try {
-            if (parsedWalletClient.provider._isProvider) {
-              provider = parsedWalletClient.provider; // Use the existing provider directly
-            } else {
-              provider = new ethers.providers.Web3Provider(parsedWalletClient.provider); // Convert it if not
-            }
-          } catch (error) {
-            console.error("Error initializing Web3Provider:", error);
-            setError("Failed to initialize Web3Provider.");
-            setLoading(false);
-            return;
-          }
-      
-          let signer;
-          try {
-            signer = provider.getSigner(accountAddress);
-          } catch (error) {
-            console.error("Error initializing signer:", error);
-            setError("Failed to initialize signer.");
-            setLoading(false);
-            return;
-          }
-      
-          // Initialize the Web3SignatureProvider
-          let signatureProvider;
-          try {
-            signatureProvider = new Web3SignatureProvider({
-              signer, // Use the signer directly
-            });
-          } catch (error) {
-            console.error("Error initializing Web3SignatureProvider:", error);
-            setError("Failed to initialize Web3SignatureProvider.");
-            setLoading(false);
-            return;
-          }
+          const rpcUrl = walletClient.chain.rpcUrls?.default?.http?.[0];
+const accountAddress = walletClient.account?.address;
+
+if (!rpcUrl) {
+  console.error("Missing RPC URL in walletClient.");
+  setError("Missing RPC URL.");
+  setLoading(false);
+  return;
+}
+
+if (!accountAddress) {
+  console.error("Missing account address in walletClient.");
+  setError("Missing account address.");
+  setLoading(false);
+  return;
+}
+
+let provider;
+try {
+  provider = new ethers.providers.JsonRpcProvider(rpcUrl); // Initialize provider with RPC URL
+} catch (error) {
+  console.error("Error initializing provider:", error);
+  setError("Failed to initialize provider.");
+  setLoading(false);
+  return;
+}
+
+let signer;
+try {
+  signer = provider.getSigner(accountAddress); // Get signer using the account address
+} catch (error) {
+  console.error("Error initializing signer:", error);
+  setError("Failed to initialize signer.");
+  setLoading(false);
+  return;
+}
+
+// Now you can proceed with the Web3SignatureProvider
+let signatureProvider;
+try {
+  signatureProvider = new Web3SignatureProvider({
+    provider: provider,
+    signer: signer,
+  });
+} catch (error) {
+  console.error("Error initializing Web3SignatureProvider:", error);
+  setError("Failed to initialize Web3SignatureProvider.");
+  setLoading(false);
+  return;
+}
       
           const requestClient = new RequestNetwork({
             nodeConnectionConfig: {
