@@ -68,9 +68,12 @@ const useVoiceBackend = () => {
     const session = generateSessionId(); // Generate a new session ID
     setSessionId(session);
   }, []);
-
+  const convertToWholeNumber = (amount: string, decimals: number): number => {
+    // Convert the string to a number and divide by 10^decimals to shift decimal points
+    return parseInt(amount) / Math.pow(10, decimals);
+};
   // Function to make the API call
-  const sendRequest = async (query: string, isWalletConnected: string, agentId: string, addess: any) => {
+  const sendRequest = async (query: string, isWalletConnected: string, agentId: string) => {
     if (!sessionId) return;
     setIsLoading(true);
 
@@ -121,16 +124,17 @@ const useVoiceBackend = () => {
                 const currency = item.currency || "N/A";
                 const status = item.balance?.balance === item.expectedAmount ? "Paid" : "Unpaid";
                 const requestId = item.requestId || "N/A";
+                const payer = item.payer?.value || "N/A";
+                const amount = convertToWholeNumber(item.expectedAmount,6) || "N/A";
+                const payee = item.payee?.value || "N/A";
 
                 return `
-                Request ${index + 1}\n,
-                Reason: ${reason}\n
-                Due Date: ${dueDate}\n
-                Builder ID: ${builderId}\n
-                State: ${state}\n
-                Currency: ${currency}\n
-                Status: ${status}\n
-                RequestId: ${requestId}\n
+                Request ${index + 1}\n
+                <br/> Currency: $${amount}\n
+                 <br/> Payer: ${payer}\n
+                  <br/> Payee: ${payee}\n
+               <br/> Status: ${status}\n
+               <br/> <span hidden> RequestId: ${requestId}\n</span>
               `;
               });
               if (!data.text) {
@@ -264,11 +268,19 @@ const useVoiceBackend = () => {
           setSuccess(true);
           console.log("confirmedRequestData", confirmedRequestData)
           setSuccess(true)
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text: data.text },
+          ]);
           return { success: true }
       } catch (error) {
           console.error('Error creating request:', error);
           setError('Failed to create request');
           setStatus(APP_STATUS.ERROR_OCCURRED);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text: "Your invoice created has failed" },
+          ]);
           console.log("Error:", error)
           alert(error);
           return { success: false }
