@@ -184,7 +184,7 @@ const useVoiceBackend = () => {
         }
 
       }
-      else if (data.intent == "finalJson") {
+      else if (data.intent === "finalJson") {
         const extraData = data.meta_data?.extra || {};
         if (!walletClient) {
           setError("No wallet client available.");
@@ -197,7 +197,6 @@ const useVoiceBackend = () => {
         setSuccess(null);
       
         try {
-          // Parse the walletClient JSON string
           let parsedWalletClient;
           try {
             parsedWalletClient = JSON.parse(walletClient);
@@ -209,31 +208,58 @@ const useVoiceBackend = () => {
             return;
           }
       
-          // Extract RPC URL
           const rpcUrl = parsedWalletClient?.chain?.rpcUrls?.default?.http?.[0];
+          const accountAddress = parsedWalletClient?.account?.address;
+      
           if (!rpcUrl) {
             console.error("Missing RPC URL in walletClient");
             setError("Missing RPC URL.");
             setLoading(false);
             return;
           }
-          console.log("Using RPC URL:", rpcUrl);
+      
+          if (!accountAddress) {
+            console.error("Missing account address in walletClient");
+            setError("Missing account address.");
+            setLoading(false);
+            return;
+          }
       
           // Initialize ethers provider and signer
           const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-          const signer = provider.getSigner(parsedWalletClient?.account?.address);
+      
+          let signer;
+          try {
+            signer = provider.getSigner(accountAddress);
+          } catch (error) {
+            console.error("Error initializing signer:", error);
+            setError("Failed to initialize signer.");
+            setLoading(false);
+            return;
+          }
       
           // Test provider connection
-          const chainId = await provider.send("eth_chainId", []);
-          console.log("Connected to chain ID:", chainId);
+          try {
+            const chainId = await provider.send("eth_chainId", []);
+            console.log("Connected to chain ID:", chainId);
+          } catch (error) {
+            console.error("Error connecting to provider:", error);
+            setError("Failed to connect to provider.");
+            setLoading(false);
+            return;
+          }
       
-          // Initialize Web3SignatureProvider
-          const signatureProvider = new Web3SignatureProvider({
-            provider,
-            signer,
-          });
+          // Reinitialize Web3SignatureProvider explicitly
+          let signatureProvider;
+          try {
+            signatureProvider = new Web3SignatureProvider({ provider, signer });
+          } catch (error) {
+            console.error("Error initializing Web3SignatureProvider:", error);
+            setError("Failed to initialize Web3SignatureProvider.");
+            setLoading(false);
+            return;
+          }
       
-          // Initialize RequestNetwork client
           const requestClient = new RequestNetwork({
             nodeConnectionConfig: {
               baseURL: "https://sepolia.gateway.request.network/",
@@ -241,9 +267,7 @@ const useVoiceBackend = () => {
             signatureProvider,
           });
       
-          alert("Step 1: Request Client Initialized");
-      
-          // Prepare request creation parameters
+          alert("step1");
           const requestCreateParameters: Types.ICreateRequestParameters = {
             requestInfo: {
               currency: {
@@ -263,7 +287,7 @@ const useVoiceBackend = () => {
               parameters: {
                 paymentNetworkName: "sepolia",
                 paymentAddress: data.recipientAddress || address,
-                feeAddress: ethers.constants.AddressZero,
+                feeAddress: zeroAddress,
                 feeAmount: "0",
               },
             },
@@ -276,30 +300,24 @@ const useVoiceBackend = () => {
               value: address as string,
             },
           };
+          alert("step2");
       
-          // Add payer address if available
           if (data.payerAddress) {
             requestCreateParameters.requestInfo.payer = {
               type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
               value: data.payerAddress,
             };
           }
-      
-          alert("Step 2: Creating Request");
+          alert("step3");
           setStatus(APP_STATUS.PERSISTING_TO_IPFS);
-      
-          // Create the request
           const request = await requestClient.createRequest(requestCreateParameters);
           setStatus(APP_STATUS.PERSISTING_ON_CHAIN);
-      
-          // Wait for confirmation
+          setRequestData(request.getData());
           const confirmedRequestData = await request.waitForConfirmation();
+      
           setStatus(APP_STATUS.REQUEST_CONFIRMED);
           setRequestData(confirmedRequestData);
-      
-          alert("Step 3: Request Created");
-      
-          // Display the request link
+          alert("step4");
           const requestId = confirmedRequestData.requestId;
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -314,7 +332,7 @@ const useVoiceBackend = () => {
           ]);
         } catch (error: any) {
           console.error("Error creating request:", error);
-          setError("Failed to create request");
+          setError("Failed to create request.");
           setMessages((prevMessages) => [
             ...prevMessages,
             { sender: "bot", text: "Unable to create your invoice" },
@@ -323,7 +341,7 @@ const useVoiceBackend = () => {
         } finally {
           setLoading(false);
         }
-      }
+      } 
        else {
         // Extract the text from the response and store it in the messages state
         const botMessage = data.text || "No response from bot";
