@@ -80,7 +80,7 @@ const useVoiceBackend = () => {
       ...prevMessages,
       { sender: "user", text: query },
     ]);
-
+    console.log(address);
     try {
       const response = await fetch(
         "https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/voice-backend",
