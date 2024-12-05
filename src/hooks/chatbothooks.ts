@@ -225,8 +225,16 @@ const useVoiceBackend = () => {
             return;
           }
       
-          // Initialize ethers provider and signer
-          const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+          // Use the walletClient provider directly with ethers
+          let provider;
+          try {
+            provider = new ethers.providers.Web3Provider(parsedWalletClient.provider);
+          } catch (error) {
+            console.error("Error initializing Web3Provider:", error);
+            setError("Failed to initialize Web3Provider.");
+            setLoading(false);
+            return;
+          }
       
           let signer;
           try {
@@ -238,21 +246,13 @@ const useVoiceBackend = () => {
             return;
           }
       
-          // Test provider connection
-          try {
-            const chainId = await provider.send("eth_chainId", []);
-            console.log("Connected to chain ID:", chainId);
-          } catch (error) {
-            console.error("Error connecting to provider:", error);
-            setError("Failed to connect to provider.");
-            setLoading(false);
-            return;
-          }
-      
-          // Reinitialize Web3SignatureProvider explicitly
+          // Initialize the Web3SignatureProvider
           let signatureProvider;
           try {
-            signatureProvider = new Web3SignatureProvider({ provider, signer });
+            signatureProvider = new Web3SignatureProvider({
+              provider: parsedWalletClient.provider, // Use the parent page provider
+              signer,
+            });
           } catch (error) {
             console.error("Error initializing Web3SignatureProvider:", error);
             setError("Failed to initialize Web3SignatureProvider.");
@@ -268,6 +268,7 @@ const useVoiceBackend = () => {
           });
       
           alert("step1");
+      
           const requestCreateParameters: Types.ICreateRequestParameters = {
             requestInfo: {
               currency: {
@@ -300,6 +301,7 @@ const useVoiceBackend = () => {
               value: address as string,
             },
           };
+      
           alert("step2");
       
           if (data.payerAddress) {
@@ -308,8 +310,10 @@ const useVoiceBackend = () => {
               value: data.payerAddress,
             };
           }
+      
           alert("step3");
           setStatus(APP_STATUS.PERSISTING_TO_IPFS);
+      
           const request = await requestClient.createRequest(requestCreateParameters);
           setStatus(APP_STATUS.PERSISTING_ON_CHAIN);
           setRequestData(request.getData());
@@ -318,6 +322,7 @@ const useVoiceBackend = () => {
           setStatus(APP_STATUS.REQUEST_CONFIRMED);
           setRequestData(confirmedRequestData);
           alert("step4");
+      
           const requestId = confirmedRequestData.requestId;
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -341,7 +346,7 @@ const useVoiceBackend = () => {
         } finally {
           setLoading(false);
         }
-      } 
+      }          
        else {
         // Extract the text from the response and store it in the messages state
         const botMessage = data.text || "No response from bot";
