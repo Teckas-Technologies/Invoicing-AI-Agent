@@ -66,7 +66,9 @@ const useVoiceBackend = () => {
   // Function to make the API call
   const sendRequest = async (query: string, isWalletConnected: string, agentId: string,address:any) => {
     if (!sessionId) return;
-
+    alert(`step 1:${isWalletConnected}`)
+    alert(`step 1:${agentId}`)
+    alert(`step 1:${address}`)
     setIsLoading(true);
 
     const payload = {
@@ -94,6 +96,7 @@ const useVoiceBackend = () => {
       );
       console.log(response);
       const res = await response.json();
+      alert(res);
       console.log(res);
       const data = res.data;
       console.log(data);
