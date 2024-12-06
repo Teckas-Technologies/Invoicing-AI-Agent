@@ -118,7 +118,7 @@ const setMessage = (sender: string, text: string) => {
       console.log(data);
       // console.log(data.meta_data.isFetchPaymentRequest);
 
-      if (data.meta_data.isFetchPaymentRequest) {
+      if (data.meta_data.isFetchPaymentRequest || data.intent==="fetchPaymentRequests"  ) {
         if (address) {
           const res = await fetchRequests(address);
           console.log("RES:", res);
@@ -165,7 +165,7 @@ const setMessage = (sender: string, text: string) => {
                 } else if (data.intent === "getExtradetails" || data.intent === "getExtraDetailName1" || data.intent === "getExtraDetailName2") {
                   setMessages((prevMessages) => [
                     ...prevMessages,
-                    { sender: "bot", text: "Do you have any additional details for this payment request?" }, 
+                    { sender: "bot", text: "Do you have any additional details for this payment request?" },
                   ]);
                 }else if(data.intent==="fetchPaymentRequests"){
                   setMessages((prevMessages) => [
@@ -231,8 +231,8 @@ const setMessage = (sender: string, text: string) => {
                     network: "sepolia",
                 },
                 expectedAmount: parseUnits(
-                    data.meta_data.amount,
-                    6,
+                    data.meta_data.amount                          ,
+                    7,
                 ).toString(),
                 payee: {
                     type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
