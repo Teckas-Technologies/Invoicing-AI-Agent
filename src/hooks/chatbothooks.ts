@@ -165,7 +165,7 @@ const setMessage = (sender: string, text: string) => {
                 } else if (data.intent === "getExtradetails" || data.intent === "getExtraDetailName1" || data.intent === "getExtraDetailName2") {
                   setMessages((prevMessages) => [
                     ...prevMessages,
-                    { sender: "bot", text: "Do you have any additional details for this payment request?" },
+                    { sender: "bot", text: "Do you have any additional details for this payment request?" }, 
                   ]);
                 }else if(data.intent==="fetchPaymentRequests"){
                   setMessages((prevMessages) => [
