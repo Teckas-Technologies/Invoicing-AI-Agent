@@ -131,7 +131,6 @@ export default function ChatBot({ agentId}: { agentId: any}) {
               <a 
                 href="https://scan.request.network/request/${requestId}" 
                 target="_blank" 
-                class="w-full space-y-4 p-3 bg-[#0BB489] text-white"
               >
                 View
               </a>
