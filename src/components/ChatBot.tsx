@@ -126,11 +126,12 @@ export default function ChatBot({ agentId}: { agentId: any}) {
           setSuccess(true);
           setMessage("bot","Payment Successfull")
         setMessage(
-          "user",
+          "bot",
           `
               <a 
                 href="https://scan.request.network/request/${requestId}" 
                 target="_blank" 
+                class="bg-[#0BB489] text-white"
               >
                 View
               </a>
