@@ -232,7 +232,7 @@ const setMessage = (sender: string, text: string) => {
                 },
                 expectedAmount: parseUnits(
                     data.meta_data.amount                          ,
-                    7,
+                    6,
                 ).toString(),
                 payee: {
                     type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
