@@ -283,7 +283,7 @@ const setMessage = (sender: string, text: string) => {
           ]);
              setMessages((prevMessages) => [
             ...prevMessages,
-            { sender: "bot", text: `<a href="https://scan.request.network/request/${confirmedRequestData.requestId}" target="_blank"  class="bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white rounded-lg shadow hover:opacity-90"
+            { sender: "bot", text: `<a href="https://scan.request.network/request/${confirmedRequestData.requestId}" target="_blank" 
 > view </a>` },
           ]); 
           return { success: true }
