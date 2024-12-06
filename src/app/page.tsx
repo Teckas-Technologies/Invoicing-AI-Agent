@@ -40,8 +40,11 @@ export default function Home() {
         const params = new URLSearchParams(window.location.search);
         const agentId = params.get("agentId");
         if (agentId) {
+           console.log(agentId);
           const res = await fetch(`https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/check-agent?agentId=${agentId}`);
-          const data = await res.json();
+           console.log(res);
+          const data = await res.json(); 
+          console.log(data);
           if(data.agent_exists===true){
             console.log(data);
             setShow(true);
