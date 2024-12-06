@@ -281,10 +281,11 @@ const setMessage = (sender: string, text: string) => {
             ...prevMessages,
             { sender: "bot", text: data.text },
           ]);
-          setMessages((prevMessages) => [
+           setMessages((prevMessages) => [
             ...prevMessages,
-            { sender: "bot", text: `<a href="https://scan.request.network/request/${confirmedRequestData.requestId}" target="_blank" > view </a>` },
-          ]);
+            { sender: "bot", text: `<a href="https://scan.request.network/request/${confirmedRequestData.requestId}" target="_blank"  class="ml-2 p-2 text-sm bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white rounded-lg shadow hover:opacity-90"
+> view </a>` },
+          ]); 
           return { success: true }
       } catch (error) {
           console.error('Error creating request:', error);
