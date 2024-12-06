@@ -43,6 +43,7 @@ export default function Home() {
           const res = await fetch(`https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/check-agent?agentId=${agentId}`);
           const data = await res.json();
           if(data.agent_exists===true){
+            console.log(data);
             setShow(true);
             setAgent(agentId);
           }else{
