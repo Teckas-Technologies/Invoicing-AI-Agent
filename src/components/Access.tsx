@@ -4,7 +4,7 @@ export default function ChatAccessDenied() {
   const { address, isConnecting, isConnected, isDisconnected } = useAccount();
 
   return (
-    <div className="flex flex-col rounded-tl-xl min-w-[370px] rounded-tr-xl rounded-bl-xl rounded-br-xl  h-screen bg-[#f5f5f5] mt-10 mb-10 text-gray-800">
+    <div className="flex flex-col rounded-tl-xl rounded-tr-xl rounded-bl-xl min-w-[370px] rounded-br-xl h-screen bg-[#f5f5f5] text-gray-800">
       {/* Header */}
       <header className="flex-shrink-0 w-full rounded-tl-xl rounded-tr-xl flex justify-between items-center bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white py-4 px-6 shadow-md">
       <h1 className="text-xl font-bold">Invoicing Agent</h1>
