@@ -295,7 +295,6 @@ const setMessage = (sender: string, text: string) => {
             { sender: "bot", text: "Your invoice created has failed" },
           ]);
           console.log("Error:", error)
-          alert(error);
           return { success: false }
       } finally {
           setLoading(false);
