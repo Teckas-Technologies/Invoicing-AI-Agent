@@ -16,7 +16,7 @@ import ChatAccessDenied from "@/components/Access";
 export default function Home() {
   const [requestData, setRequestData] = useState(null);
   const[show,setShow] = useState(true);
-  const [agent,setAgent] = useState("6751bbe4b078ade1be331d7b");
+  const [agent,setAgent] = useState("675256f63c27ef9e9279dce7");
   const [accountId, setAccountId] = useState<string | null>(null);
   const [walletClient,setWalletClient]= useState("");
   const handleCreateRequest = async (data: any) => {
@@ -40,9 +40,14 @@ export default function Home() {
         const params = new URLSearchParams(window.location.search);
         const agentId = params.get("agentId");
         if (agentId) {
-          // alert(`agent${agentId}`)
-          setShow(true);
-          setAgent(agentId);
+          const res = await fetch(`https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/check-agent?agentId=${agentId}`);
+          const data = await res.json();
+          if(data.agent_exists===true){
+            setShow(true);
+            setAgent(agentId);
+          }else{
+            setShow(false);
+          }
         }else{
           setShow(false);
         }
@@ -61,11 +66,11 @@ export default function Home() {
       {/* <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={"0xFf43E33C40276FEEff426C5448cF3AD9df6b5741"} src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script> */}
       {/* <CreateRequestForm /> */}
       {/* <RequestTabs /> */}
-      {show?( 
+      {/* {show?(  */}
        <ChatBot agentId={agent}/>
-      ):(
+     {/* ):(
         <ChatAccessDenied/>
-      )}  
+      )}   */}
       {/* <SampleCode /> */}
     </main>
   );
