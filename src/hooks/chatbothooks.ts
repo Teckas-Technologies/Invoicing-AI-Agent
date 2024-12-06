@@ -231,8 +231,8 @@ const setMessage = (sender: string, text: string) => {
                     network: "sepolia",
                 },
                 expectedAmount: parseUnits(
-                    data.meta_data.amount                          ,
-                    7,
+                    data.meta_data.amount,
+                    6,
                 ).toString(),
                 payee: {
                     type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
