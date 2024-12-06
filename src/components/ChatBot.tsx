@@ -125,7 +125,17 @@ export default function ChatBot({ agentId}: { agentId: any}) {
           setIsPay(false)
           setSuccess(true);
           setMessage("bot","Payment Successfull")
-          setMessage("bot",`<a href="https://scan.request.network/request/${requestId}" target="_blank" view </a>`); 
+        setMessage(
+          "user",
+          `<div class="flex justify-start">
+              <a 
+                href="https://scan.request.network/request/${requestId}" 
+                target="_blank" 
+              >
+                View
+              </a>
+           </div>`
+        );
           setSuccessMessage("Payment Successfull");
           setSuccess(false);
           setError(false);
