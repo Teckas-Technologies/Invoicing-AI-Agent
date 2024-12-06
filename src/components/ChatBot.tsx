@@ -32,7 +32,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
       open({ view: 'Connect' });
   }
 
-   const handleDisconnect = () => {
+  const handleDisconnect = () => {
       // disconnect();
       open({ view: 'Account' });
   }
@@ -151,16 +151,16 @@ export default function ChatBot({ agentId}: { agentId: any}) {
   }, [messages, isloading]);
 
   return (
-    <div className="flex flex-col rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-xl h-screen bg-[#f5f5f5] text-gray-800">
+    <div className="flex flex-col rounded-tl-xl rounded-tr-xl rounded-bl-xl min-w-[370px] rounded-br-xl h-screen bg-[#f5f5f5] text-gray-800">
       <header className="flex-shrink-0 w-full rounded-tl-xl rounded-tr-xl flex justify-start gap-4 items-center bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white py-4 px-6 shadow-md">
         <h1 className="text-xl font-bold">Invoicing Agent</h1>
         {!isConnected?(
-          <div className="px-5 py-1 bg-gray-200 rounded-md shadow-md" onClick={handleConnectWallet}>
-        <h1 className="text-xl font-bold cursor-pointer text-[#0BB489]">connect</h1>
+          <div className="px-5 py-1" onClick={handleConnectWallet}>
+        <img className="cursor-pointer  w-7 h-7" src="/w1.png"></img>
         </div>
         ):(
-          <div onClick={handleDisconnect}>
-          <h1 className="text-xl font-bold cursor-pointer">view</h1>
+          <div className="px-5 py-1" onClick={handleDisconnect}>
+          <img className="cursor-pointer w-7 h-7" src="/w2.png"></img>
           </div>
         )}
         
@@ -189,7 +189,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
                           Pay
                         </button>
                       ): status === "Paid" && message.sender !== "user" ?(
-                        <a href={`https://scan.request.network/request/${requestId}`}
+                        <a target="_blank" href={`https://scan.request.network/request/${requestId}`}
                         className="ml-2 mt-2 p-2 text-sm bg-gradient-to-r from-[#0BB489] to-[#0AA178] text-white rounded-lg shadow hover:opacity-90"
                       >
                         View
@@ -208,8 +208,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
                     className={`p-3 rounded-lg max-w-[330px] break-words shadow-md ${
                       message.sender === "user" ? "bg-[#0BB489] text-white" : "bg-gray-200 text-gray-800"
                     }`}
-                    >
-                    {message.text}
+                    dangerouslySetInnerHTML={{ __html: message.text }}  >
                   </div>
                 </div>
               ))}
