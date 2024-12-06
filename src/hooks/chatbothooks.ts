@@ -72,6 +72,15 @@ const useVoiceBackend = () => {
     // Convert the string to a number and divide by 10^decimals to shift decimal points
     return parseInt(amount) / Math.pow(10, decimals);
 };
+
+const setMessage = (sender: string, text: string) => {
+  setMessages((prevMessages) => [
+    ...prevMessages,
+    { sender, text },
+  ]);
+};
+
+
   // Function to make the API call
   const sendRequest = async (query: string, isWalletConnected: string, agentId: string) => {
     if (!sessionId) return;
@@ -281,7 +290,7 @@ const useVoiceBackend = () => {
           console.error('Error creating request:', error);
           setError('Failed to create request');
           setStatus(APP_STATUS.ERROR_OCCURRED);
-          setMessages((prevMessages) => [
+          setMessages((prevMessages) => [   
             ...prevMessages,
             { sender: "bot", text: "Your invoice created has failed" },
           ]);
@@ -319,6 +328,7 @@ const useVoiceBackend = () => {
     isloading,
     isPaymentRequired,
     sendRequest,
+    setMessage
   };
 };
 
