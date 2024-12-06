@@ -11,7 +11,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 
 export default function ChatBot({ agentId}: { agentId: any}) {
-  const { sessionId, messages, isloading, isPaymentRequired, sendRequest } = useVoiceBackend();
+  const { sessionId, messages,setMessage, isloading, isPaymentRequired, sendRequest } = useVoiceBackend();
   const [query, setQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState<string>("");  // Added error state
   const [successMessage, setSuccessMessage] = useState<string>("");  // Added error state
@@ -72,6 +72,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
 
       if (!_hasSufficientFunds) {
         setError(true);
+        setMessage("bot","Insufficient balance for this transaction.")
         setErrorMessage("Insufficient balance for this transaction.");
         return;
       }
@@ -85,6 +86,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
           }
         } catch (approvalError) {
           setError(true);
+          setMessage("bot","ERC20 approval failed!")
           setErrorMessage("ERC20 approval failed!");
           console.error("Error during ERC20 approval:", approvalError);
           return;
@@ -92,6 +94,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
       }
     } catch (error) {
       setError(true);
+      setMessage("bot","Error occurred during approval process.")
       setErrorMessage("Error occurred during approval process.");
       console.error("Error in handleApprove:", error);
     }
@@ -103,6 +106,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
       const requestData = await fetchSingleRequest(requestId);
       if (!requestData) {
         setError(true);
+        setMessage("bot","Invalid payment request ID.")
         setErrorMessage("Invalid payment request ID.");
         return;
       }
@@ -111,6 +115,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
         await handleApprove(requestData);
       } catch (approveError) {
         setError(true);
+        setMessage("bot","Payment approval failed.")
         setErrorMessage("Payment approval failed.");
         return;
       }
@@ -119,6 +124,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
         if (res?.success) {
           setIsPay(false)
           setSuccess(true);
+          setMessage("bot","Payment Successfull")
           setSuccessMessage("Payment Successfull");
           setSuccess(false);
           setError(false);
@@ -126,18 +132,21 @@ export default function ChatBot({ agentId}: { agentId: any}) {
         } else {
           setIsPay(false)
           setError(true);
+          setMessage("bot","Payment failed.")
           setErrorMessage("Payment failed.");
         }
         setIsPay(false)
       } catch (paymentError) {
         setError(true);
         setIsPay(false)
+        setMessage("bot","Payment failed.")
         setErrorMessage("Payment failed.");
         console.error("Error in payment:", paymentError);
       }
     } catch (error) {
       setError(true);
       setIsPay(false)
+      setMessage("bot","Something went wrong while processing payment.")
       setErrorMessage("Something went wrong while processing payment.");
       console.error("Error in handlePay:", error);
     }
@@ -216,7 +225,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
           )}
 
           {/* Typing Indicator */}
-
+{/* 
 {error&&(
           <>
                 <div className={`flex justify-start`}>
@@ -227,9 +236,9 @@ export default function ChatBot({ agentId}: { agentId: any}) {
                   </div>
                 </div>
                 </>
-              )}
+              )} */}
 
-               {success&&(
+               {/* {success&&(
                 <>
                 <div className={`flex justify-start`}>
                   <div
@@ -239,7 +248,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
                   </div>
                 </div>
                 </>
-              )}
+              )} */}
                {isPay&&(
                  <div className="flex justify-start">
                    <div className="p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800">
