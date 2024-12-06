@@ -272,6 +272,10 @@ const useVoiceBackend = () => {
             ...prevMessages,
             { sender: "bot", text: data.text },
           ]);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text: `<a href="https://scan.request.network/request/${confirmedRequestData.requestId}" target="_blank" > view </a>` },
+          ]);
           return { success: true }
       } catch (error) {
           console.error('Error creating request:', error);
